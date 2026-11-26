@@ -1,0 +1,3032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rocket Skin Studio</title>
+<style>
+    :root {
+        --bg: #070913;
+        --panel: #0f1428;
+        --panel2: #151b35;
+        --line: #26304f;
+        --ink: #e8ecf8;
+        --dim: #93a0c4;
+        --accent: #38bdf8;
+        --gold: #fcd34d;
+        --good: #4ade80;
+        --bad: #f87171;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+        background: var(--bg);
+        color: var(--ink);
+        font: 15px/1.45 'Segoe UI', Tahoma, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    header {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 18px;
+        background: linear-gradient(180deg, #121a36, #0c122a);
+        border-bottom: 1px solid var(--line);
+        flex: 0 0 auto; flex-wrap: wrap;
+    }
+    header h1 { font-size: 1.05rem; margin: 0; letter-spacing: .3px; }
+    header .sub { color: var(--dim); font-size: .8rem; }
+    .spacer { flex: 1; }
+
+    button {
+        font: inherit; font-weight: 600;
+        color: var(--ink);
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 8px 14px;
+        cursor: pointer;
+    }
+    button:hover:not(:disabled) { border-color: #41507d; background: #1b2242; }
+    button:disabled { opacity: .45; cursor: default; }
+    button.primary {
+        background: linear-gradient(180deg, #0ea5e9, #0369a1);
+        border-color: #0ea5e9; color: #fff;
+    }
+    button.primary:hover:not(:disabled) { background: linear-gradient(180deg, #38bdf8, #0284c7); }
+    button.gold {
+        background: linear-gradient(180deg, #f59e0b, #b45309);
+        border-color: #f59e0b; color: #1a1205;
+    }
+    button.danger:hover:not(:disabled) { border-color: var(--bad); color: var(--bad); }
+    button.tiny { padding: 4px 9px; font-size: .8rem; border-radius: 7px; }
+
+    .who {
+        background: #0a0e20; border: 1px solid var(--line);
+        border-radius: 8px; padding: 4px 10px; font-size: .84rem;
+    }
+    .who b { color: var(--accent); }
+
+    main { flex: 1 1 auto; display: flex; min-height: 0; }
+    #list {
+        width: 250px; flex: 0 0 auto; overflow-y: auto;
+        border-right: 1px solid var(--line); padding: 12px;
+        background: #0a0e1e;
+    }
+    #work { flex: 1 1 auto; overflow-y: auto; padding: 18px 22px 60px; min-width: 0; }
+
+    .listhead {
+        display: flex; align-items: center; gap: 8px;
+        font-size: .78rem; color: var(--dim); text-transform: uppercase;
+        letter-spacing: .5px; margin-bottom: 10px;
+    }
+
+    .card {
+        display: flex; align-items: center; gap: 10px;
+        padding: 8px; margin-bottom: 8px;
+        border: 1px solid var(--line); border-radius: 10px;
+        background: var(--panel); cursor: pointer;
+    }
+    .card:hover { border-color: #41507d; }
+    .card.on { border-color: var(--accent); background: #13203a; }
+    .card canvas { border-radius: 7px; background: #060814; flex: 0 0 auto; }
+    .card .meta { min-width: 0; flex: 1 1 auto; }
+    .card .nm { font-weight: 700; font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card .how { font-size: .76rem; color: var(--dim); }
+    .sent-tag {
+        display: inline-block;
+        background: rgba(74, 222, 128, .14);
+        border: 1px solid rgba(74, 222, 128, .5);
+        color: var(--good);
+        font-size: .62rem; font-weight: 800; letter-spacing: .5px;
+        padding: 1px 6px; border-radius: 5px;
+        text-transform: uppercase; vertical-align: middle;
+    }
+
+    .row { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start; }
+    .fields { flex: 1 1 360px; min-width: 290px; }
+    .stage { flex: 0 0 auto; }
+    .stage canvas {
+        background: radial-gradient(circle at 50% 35%, #101935, #05070f 75%);
+        border: 1px solid var(--line); border-radius: 14px;
+        touch-action: none;
+    }
+    .stage .cap { text-align: center; color: var(--dim); font-size: .8rem; margin-top: 8px; }
+
+    fieldset {
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 14px 16px 16px; margin: 0 0 16px; background: var(--panel);
+    }
+    legend { padding: 0 8px; color: var(--accent); font-weight: 700; font-size: .85rem; letter-spacing: .4px; text-transform: uppercase; }
+
+    label.f { display: block; margin-bottom: 12px; }
+    label.f > span.lab { display: block; font-size: .82rem; color: var(--dim); margin-bottom: 4px; }
+    label.f > span.hint { display: block; font-size: .76rem; color: #6f7da6; margin-top: 3px; }
+
+    input[type=text], input[type=number], select, textarea {
+        font: inherit; color: var(--ink);
+        background: #0a0e20; border: 1px solid var(--line);
+        border-radius: 8px; padding: 7px 10px; width: 100%;
+    }
+    textarea { font-family: ui-monospace, Consolas, monospace; font-size: .8rem; resize: vertical; }
+    input[type=color] {
+        width: 46px; height: 34px; padding: 0;
+        background: none; border: 1px solid var(--line); border-radius: 8px; cursor: pointer;
+    }
+    input[type=range] { width: 100%; }
+    .swatches { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .ck { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: .9rem; }
+    .ck input { width: 17px; height: 17px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+    @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+
+    .tools { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+    .tools button.on { background: linear-gradient(180deg, #0ea5e9, #0369a1); border-color: #0ea5e9; color: #fff; }
+    .drawhint { color: var(--dim); font-size: .78rem; margin: 6px 0 0; }
+    .pct { font-size: .74rem; color: var(--dim); width: 32px; text-align: right; }
+
+    .meter { margin-top: 10px; font-size: .78rem; color: var(--dim); }
+    .meter .bar {
+        height: 6px; background: #0a0e20; border: 1px solid var(--line);
+        border-radius: 4px; overflow: hidden; margin-top: 4px;
+    }
+    .meter .bar i { display: block; height: 100%; background: var(--good); width: 0; }
+    .meter.warn .bar i { background: var(--gold); }
+    .meter.full .bar i { background: var(--bad); }
+    .meter.warn, .meter.full { color: var(--gold); }
+    .meter.full { color: var(--bad); }
+
+    #msg {
+        position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+        max-width: min(760px, 92vw);
+        background: #111a33; border: 1px solid var(--line);
+        border-left: 5px solid var(--accent);
+        border-radius: 12px; padding: 12px 16px 12px;
+        box-shadow: 0 16px 40px rgba(0,0,0,.6);
+        display: none; z-index: 50;
+    }
+    #msg.show { display: block; }
+    #msg.ok { border-left-color: var(--good); }
+    #msg.err { border-left-color: var(--bad); }
+    #msg h4 { margin: 0 24px 6px 0; font-size: .95rem; }
+    #msg ul { margin: 6px 0 0; padding-left: 20px; font-size: .86rem; color: #cfd8f0; }
+    #msg .x { position: absolute; top: 6px; right: 8px; background: none; border: none; color: var(--dim); font-size: 1.1rem; padding: 2px 6px; }
+
+    .veil {
+        position: fixed; inset: 0; background: rgba(4, 6, 14, .82);
+        display: none; align-items: center; justify-content: center; z-index: 80;
+        padding: 20px;
+    }
+    .veil.show { display: flex; }
+    .sheet {
+        background: var(--panel); border: 1px solid var(--line);
+        border-radius: 16px; padding: 22px 24px;
+        width: min(460px, 100%); max-height: 90vh; overflow-y: auto;
+        box-shadow: 0 24px 60px rgba(0,0,0,.7);
+    }
+    .sheet h3 { margin: 0 0 6px; font-size: 1.1rem; }
+    .sheet p.note { color: var(--dim); font-size: .86rem; margin: 0 0 16px; }
+    .sheet .btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; flex-wrap: wrap; }
+    .err { color: var(--bad); font-size: .82rem; min-height: 18px; margin: 2px 0 8px; }
+    .note { color: var(--dim); font-size: .85rem; }
+    .note b { color: var(--ink); }
+    code {
+        background: #060a16; padding: 2px 6px; border-radius: 5px;
+        font-size: .84rem; word-break: break-all;
+    }
+
+    /* Shown only in the phone layout, hidden otherwise. */
+    .phone-only { display: none; }
+    #scrim {
+        position: fixed; inset: 0; background: rgba(4, 6, 14, .6);
+        z-index: 65; display: none;
+    }
+
+    /* =====================================================================
+       THE PHONE LAYOUT
+
+       Most people who use this are on a phone, so this is not a shrunk-down
+       version of the desktop one - it is a different arrangement.
+
+         - one column, with the rocket at the top where the thumb can reach
+         - the designs list slides over instead of taking a third of the
+           screen (at 375px wide it was leaving 125px for the canvas)
+         - every control is at least 44px tall, which is Apple's minimum
+           tappable size and close to Material's 48dp
+         - nothing depends on hovering, because there is no hover
+
+       It is switched on by screen width, and can be forced either way from
+       Settings for anyone whose phone or tablet guesses wrong.
+       ===================================================================== */
+    body.phone { overflow-x: hidden; }
+
+    body.phone header { padding: 10px 12px; gap: 8px; }
+    body.phone header h1 { font-size: .98rem; }
+    body.phone header .sub { display: none; }
+    body.phone .phone-only { display: inline-flex; }
+    body.phone .desk-only { display: none; }
+
+    body.phone main { flex-direction: column; min-height: 0; }
+
+    body.phone #list {
+        position: fixed; top: 0; bottom: 0; left: 0;
+        width: min(86vw, 320px);
+        z-index: 70;
+        transform: translateX(-101%);
+        box-shadow: 18px 0 44px rgba(0, 0, 0, .6);
+        padding-top: 14px;
+    }
+    /* The slide is added only after the first paint. Declared up front, the
+       panel animates itself in from nowhere as the page loads. */
+    body.phone.ready #list { transition: transform .2s ease; }
+    body.phone.designs-open #list { transform: none; }
+    body.phone.designs-open #scrim { display: block; }
+
+    body.phone #work { padding: 12px 12px 48px; }
+    body.phone .row { flex-direction: column; gap: 16px; }
+    body.phone .stage, body.phone .fields { width: 100%; flex: 1 1 auto; min-width: 0; }
+    body.phone .stage canvas { width: 100%; display: block; }
+
+    /* Fingers are not mouse pointers. */
+    body.phone button { min-height: 44px; }
+    body.phone button.tiny { min-height: 44px; padding: 9px 14px; font-size: .88rem; border-radius: 10px; }
+    body.phone input[type=color] { width: 58px; height: 44px; }
+    body.phone input[type=text], body.phone input[type=number], body.phone select { min-height: 44px; }
+    body.phone input[type=range] { height: 44px; }
+    body.phone .ck input { width: 24px; height: 24px; }
+    body.phone .ck { min-height: 44px; }
+    body.phone .card { padding: 10px; min-height: 64px; }
+    body.phone .grid2 { grid-template-columns: 1fr 1fr; }
+    body.phone .tools { gap: 8px; }
+    body.phone .pct { font-size: .82rem; }
+    body.phone fieldset { padding: 12px 12px 14px; }
+    body.phone .sheet { padding: 18px 16px; }
+
+    /* The two things you press at the end live at the bottom, in easy
+       reach of a thumb, instead of at the top where a phone is hardest to
+       reach. It also gets the header down to a single row. */
+    #bottombar { display: none; }
+    body.phone #bottombar {
+        display: flex; gap: 10px;
+        position: fixed; left: 0; right: 0; bottom: 0;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+        background: linear-gradient(180deg, rgba(10,14,32,.82), #0b1026 40%);
+        border-top: 1px solid var(--line);
+        z-index: 60;
+        backdrop-filter: blur(8px);
+    }
+    #bottombar button { flex: 1 1 0; min-height: 48px; }
+    body.phone #work { padding-bottom: 96px; }
+    body.phone #msg { bottom: 86px; left: 12px; right: 12px; transform: none; max-width: none; }
+    body.phone header { flex-wrap: nowrap; }
+    body.phone header h1 {
+        font-size: .95rem; white-space: nowrap;
+        overflow: hidden; text-overflow: ellipsis;
+    }
+    body.phone .who { display: none; }
+
+    /* A row of equal, thumb-sized tool buttons rather than a ragged wrap. */
+    body.phone .toolgrid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+    body.phone .toolgrid button { width: 100%; min-height: 48px; }
+
+    /* Collapsible sections, so the page is not a mile of colour pickers. */
+    body.phone fieldset.fold > legend { cursor: pointer; }
+    body.phone fieldset.fold.shut > *:not(legend) { display: none; }
+    body.phone fieldset.fold > legend::after {
+        content: ' \25BE'; color: var(--dim);
+    }
+    body.phone fieldset.fold.shut > legend::after { content: ' \25B8'; }
+</style>
+</head>
+<body>
+
+<header>
+    <button class="tiny phone-only" id="btnDesigns">&#9776; Designs</button>
+    <h1>Rocket Skin Studio</h1>
+    <span class="sub">design a rocket for Asteroid Dodger</span>
+    <span class="who" id="who"></span>
+    <div class="spacer"></div>
+    <button class="tiny desk-only" id="btnBackup" title="Download all your designs as one file">Back up</button>
+    <button class="tiny desk-only" id="btnRestore" title="Load a backup file">Restore</button>
+    <button class="tiny" id="btnSettings" title="Settings">&#9881;</button>
+    <button class="desk-only" id="btnCopy">Copy code</button>
+    <button class="primary desk-only" id="btnSend">Send it in</button>
+</header>
+
+<div id="bottombar">
+    <button id="btnCopy2">Copy code</button>
+    <button class="primary" id="btnSend2">Send it in</button>
+</div>
+
+<main>
+    <div id="list"></div>
+    <div id="work"></div>
+</main>
+
+<div id="scrim"></div>
+
+<!-- settings -->
+<div class="veil" id="setVeil">
+    <div class="sheet">
+        <h3>Settings</h3>
+        <p class="note">How the page is laid out. <b>Automatic</b> picks by
+            the size of your screen, and is right nearly always.</p>
+        <div class="tools" id="layoutBtns" style="margin-bottom:18px"></div>
+
+        <h3 style="font-size:1rem">Sending</h3>
+        <p class="note" id="setSendWhere"></p>
+        <div class="tools" style="margin-bottom:6px">
+            <button id="setTest">Test the connection</button>
+        </div>
+        <div id="setTestOut" class="note" style="margin:8px 0 18px"></div>
+
+        <h3 style="font-size:1rem">Your designs</h3>
+        <p class="note">They are kept in this browser only. A backup is one
+            file you can keep anywhere and load on any device.</p>
+        <div class="tools" style="margin-bottom:6px">
+            <button id="setBackup">Back up to a file</button>
+            <button id="setRestore">Load a backup</button>
+        </div>
+        <p class="note" id="setWho" style="margin-top:14px"></p>
+        <div class="btns">
+            <button id="setName">Change my name</button>
+            <button class="primary" id="setClose">Done</button>
+        </div>
+    </div>
+</div>
+
+<div id="msg"><button class="x" id="msgX">&times;</button><div id="msgBody"></div></div>
+
+<!-- first run: who are you -->
+<div class="veil" id="nameVeil">
+    <div class="sheet">
+        <h3>What name goes on your designs?</h3>
+        <p class="note">This is what shows up in the game next to any rocket of yours that gets used.</p>
+        <label class="f">
+            <span class="lab">Your name</span>
+            <input type="text" id="nameIn" maxlength="24" placeholder="e.g. Zack" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="f">
+            <span class="lab">Invite code</span>
+            <input type="text" id="codeIn" maxlength="32" placeholder="the code you were given" autocomplete="off" spellcheck="false">
+            <span class="hint">Leave blank if you weren't given one.</span>
+        </label>
+        <div class="err" id="nameErr"></div>
+        <div class="btns">
+            <button class="primary" id="nameOk">Start designing</button>
+        </div>
+    </div>
+</div>
+
+<!-- the copy-the-code sheet -->
+<div class="veil" id="copyVeil">
+    <div class="sheet">
+        <h3>Your skin code</h3>
+        <p class="note">Send this to whoever asked you for it. It's just text &mdash; paste it into a message.</p>
+        <textarea id="copyBox" rows="7" readonly></textarea>
+        <div class="err" id="copyErr"></div>
+        <div class="btns">
+            <button id="copyClose">Close</button>
+            <button class="primary" id="copyGo">Copy to clipboard</button>
+        </div>
+    </div>
+</div>
+
+<script>
+'use strict';
+
+/* =======================================================================
+   ROCKET SKIN STUDIO
+
+   A single file. No server, no install - it runs from a double-click or
+   from a web address, and everything is kept in the browser it runs in.
+
+   ---------------------------------------------------------------------
+   THE ONE THING TO FILL IN
+
+   Paste the web app address from Google below, between the quotes, once
+   you have deployed the Apps Script. Until you do, "Send it in" stays
+   switched off and designers use "Copy code" instead - which works on
+   its own and needs nothing set up at all.
+   ===================================================================== */
+const CONFIG = {
+    SUBMIT_URL: '',
+
+    // Where submitted work goes, for the message shown after sending.
+    OWNER: 'Asteroid Dodger',
+
+    // A designer must type an invite code before sending. Turn this off
+    // and anyone with the address can send work in.
+    REQUIRE_CODE: true
+};
+
+/* A Google Sheets cell holds 50,000 characters. Staying well under it
+   leaves room for the other columns and for Google changing its mind. */
+const MAX_CODE_CHARS = 45000;
+
+/* The real limit on drawing, and the one that matters.
+
+   The per-stroke caps alone are nowhere near enough: 80 strokes of 400
+   points in each list comes to 1.25 MB, about 28 times what a cell can
+   hold. So the budget is counted in points, and it is enforced while you
+   draw rather than sprung on you at the end.
+
+   Measured at roughly 21 characters of code per point, so 1800 points is
+   about 38 KB - comfortably inside the cell, and inside the 3000 points
+   the game's own checker allows. In practice that is around 20 lines
+   drawn right across the rocket, or far more shorter ones. */
+const MAX_POINTS = 1800;
+
+function pointsUsed(skin) {
+    let n = 0;
+    for (const k of ['decals', 'blends']) {
+        for (const s of skin[k] || []) n += (s.pts || []).length;
+    }
+    return n;
+}
+
+const KEYS = {
+    name: 'rss_name',
+    code: 'rss_code',
+    designs: 'rss_designs',
+    sel: 'rss_sel',
+    layout: 'rss_layout'
+};
+
+/* ----------------------------------------------------------- the layout
+
+   'auto' decides by how wide the screen is. The other two are there
+   because a big phone held sideways, or a small laptop, can land on the
+   wrong side of any line you draw - and being stuck in the wrong layout
+   with no way out is worse than guessing wrong. */
+let layoutMode = 'auto';          // auto | phone | computer
+
+/* 900, not 760. A tablet held upright is 768 wide and a phone turned
+   sideways is about 844 - both were landing on the computer layout, which
+   left two dozen controls too small to tap and, sideways, a rocket taller
+   than the screen. The touch layout on a roomy screen is merely
+   comfortable; the mouse layout on a touch screen is a nuisance. */
+const PHONE_MAX = 900;
+
+function phoneWanted() {
+    if (layoutMode === 'phone') return true;
+    if (layoutMode === 'computer') return false;
+    if (window.innerWidth <= PHONE_MAX) return true;
+    // A big tablet: plenty of room, but still fingers.
+    return window.matchMedia('(pointer: coarse)').matches && window.innerWidth <= 1180;
+}
+
+let isPhone = false;
+function applyLayout() {
+    const want = phoneWanted();
+    const changed = want !== isPhone;
+    isPhone = want;
+    document.body.classList.toggle('phone', isPhone);
+    if (!isPhone) closeDesigns();
+    if (changed) render(); else sizeCanvas();
+}
+
+function openDesigns() { document.body.classList.add('designs-open'); }
+function closeDesigns() { document.body.classList.remove('designs-open'); }
+
+/* localStorage throws rather than returning null when a browser has
+   storage switched off, so every touch of it goes through here. */
+const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+
+const $ = id => document.getElementById(id);
+
+/* ------------------------------------------------------------ colour maths */
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function hexToRgb(hex) {
+    const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '').trim());
+    if (!m) return { r: 128, g: 128, b: 128 };
+    const n = parseInt(m[1], 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+function rgbToHex(r, g, b) {
+    const h = v => clamp(Math.round(v), 0, 255).toString(16).padStart(2, '0');
+    return '#' + h(r) + h(g) + h(b);
+}
+function withAlpha(hex, a) {
+    const c = hexToRgb(hex);
+    return 'rgba(' + c.r + ', ' + c.g + ', ' + c.b + ', ' + clamp(a, 0, 1) + ')';
+}
+function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+    let h = 0, s = 0; const l = (mx + mn) / 2;
+    if (mx !== mn) {
+        const d = mx - mn;
+        s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+        if (mx === r) h = (g - b) / d + (g < b ? 6 : 0);
+        else if (mx === g) h = (b - r) / d + 2;
+        else h = (r - g) / d + 4;
+        h /= 6;
+    }
+    return { h, s, l };
+}
+function hslToHex(h, s, l) {
+    h = ((h % 1) + 1) % 1; s = clamp(s, 0, 1); l = clamp(l, 0, 1);
+    const f = n => {
+        const k = (n + h * 12) % 12;
+        return l - s * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    };
+    return rgbToHex(f(0) * 255, f(8) * 255, f(4) * 255);
+}
+function shade(hex, shift, satMul) {
+    const c = hexToRgb(hex);
+    const h = rgbToHsl(c.r, c.g, c.b);
+    return hslToHex(h.h, clamp(h.s * (satMul === undefined ? 1 : satMul), 0, 1), clamp(h.l + shift, 0.02, 0.98));
+}
+
+/* =====================================================================
+   THE FOUR THINGS YOU CAN DESIGN
+
+   Same four the game has. Only the rocket can be drawn on - the other
+   three are not flat surfaces in the game, they are a flame, a cloud of
+   particles and a lump of rock, so they are made of colours and numbers.
+   ===================================================================== */
+const KINDS = [
+    { key: 'rocket', tab: 'Rocket',    one: 'rocket',    plural: 'rockets' },
+    { key: 'boost',  tab: 'Flame',     one: 'flame',     plural: 'flames' },
+    { key: 'blast',  tab: 'Explosion', one: 'explosion', plural: 'explosions' },
+    { key: 'rock',   tab: 'Asteroid',  one: 'asteroid',  plural: 'asteroids' }
+];
+function kindInfo(k) { return KINDS.find(x => x.key === k) || KINDS[0]; }
+
+/* ----------------------------------------------- a whole skin from one colour */
+function rocketFromColour(base) {
+    return {
+        stops: [shade(base, -0.18), shade(base, 0.26), base, shade(base, -0.32)],
+        fin: shade(base, -0.1),
+        centerFin: shade(base, -0.2),
+        tip: shade(base, 0.16),
+        stripe: shade(base, 0.34),
+        nozzle: shade(base, -0.38, 0.6),
+        glassRim: shade(base, -0.26),
+        pattern: 'none'
+    };
+}
+function boostFromColour(base) {
+    return {
+        outer: [shade(base, 0.3), base, shade(base, -0.28)],
+        core: shade(base, 0.44, 0.35),
+        sparks: [shade(base, 0.26), base, shade(base, -0.14), shade(base, 0.42, 0.3)],
+        length: 1
+    };
+}
+function blastFromColour(base) {
+    return {
+        colors: [base, shade(base, 0.18), shade(base, 0.36), shade(base, -0.2), '#ffffff'],
+        count: 70, speed: 1, size: 1
+    };
+}
+function rockFromColour(base) {
+    return {
+        body: [shade(base, 0.24), base, shade(base, -0.3)],
+        stroke: shade(base, -0.14),
+        crater: shade(base, -0.4, 0.7),
+        sniperBody: [shade(base, 0.3, 1.2), shade(base, -0.12, 1.3), shade(base, -0.36, 1.1)],
+        sniperStroke: shade(base, 0.18, 1.3),
+        sniperTrail: [base, shade(base, 0.22)]
+    };
+}
+const MAKERS = {
+    rocket: rocketFromColour, boost: boostFromColour,
+    blast: blastFromColour, rock: rockFromColour
+};
+const START_COLOUR = { rocket: '#3b82f6', boost: '#f97316', blast: '#f59e0b', rock: '#64748b' };
+
+function autoPatches(skin, count, jitter) {
+    const src = skin.stops || ['#888888'];
+    const out = [];
+    const j = jitter || 0;
+    for (let i = 0; i < count; i++) {
+        const base = src[(i + j) % src.length];
+        const k = (i + j) % 3;
+        if (k === 0) out.push({ c: shade(base, -0.05), a: 0.88 });
+        else if (k === 1) out.push({ c: shade(base, 0.3), a: 0.4 });
+        else out.push({ c: shade(base, -0.3, 0.7), a: 0.84 });
+    }
+    return out;
+}
+
+/* ================================ DRAWING ==============================
+   Every shape and every step below is copied from the game, in the same
+   order, so what you see here is exactly what a player sees.
+   ======================================================================= */
+
+function traceFuselage(ctx, w, h) {
+    ctx.beginPath();
+    ctx.moveTo(0, -h * 0.52);
+    ctx.bezierCurveTo(w * 0.48, -h * 0.2, w * 0.45, h * 0.2, w * 0.32, h * 0.38);
+    ctx.lineTo(-w * 0.32, h * 0.38);
+    ctx.bezierCurveTo(-w * 0.45, h * 0.2, -w * 0.48, -h * 0.2, 0, -h * 0.52);
+    ctx.closePath();
+}
+
+const PATTERN_LAYOUT = {
+    patches: [
+        { x: -0.18, y: -0.22, rx: 0.24, ry: 0.16, rot: 0.4 },
+        { x: 0.16, y: -0.14, rx: 0.22, ry: 0.18, rot: -0.5 },
+        { x: -0.12, y: 0.06, rx: 0.26, ry: 0.17, rot: -0.25 },
+        { x: 0.18, y: 0.14, rx: 0.23, ry: 0.15, rot: 0.65 },
+        { x: 0.0, y: -0.02, rx: 0.28, ry: 0.20, rot: 0.15 },
+        { x: -0.20, y: 0.22, rx: 0.20, ry: 0.14, rot: 0.5 },
+        { x: 0.12, y: 0.26, rx: 0.22, ry: 0.13, rot: -0.4 }
+    ],
+    camo: [
+        { x: 0.0, y: -0.42, rx: 0.22, ry: 0.15, rot: 0.2 },
+        { x: -0.12, y: -0.32, rx: 0.20, ry: 0.14, rot: -0.35 },
+        { x: 0.14, y: -0.26, rx: 0.22, ry: 0.16, rot: 0.45 },
+        { x: -0.18, y: -0.14, rx: 0.26, ry: 0.17, rot: 0.3 },
+        { x: 0.15, y: -0.04, rx: 0.25, ry: 0.18, rot: -0.4 },
+        { x: -0.14, y: 0.08, rx: 0.27, ry: 0.17, rot: -0.25 },
+        { x: 0.18, y: 0.16, rx: 0.24, ry: 0.16, rot: 0.55 },
+        { x: -0.16, y: 0.25, rx: 0.25, ry: 0.15, rot: 0.4 },
+        { x: 0.12, y: 0.30, rx: 0.26, ry: 0.15, rot: -0.3 }
+    ]
+};
+const PATCH_COUNT = { patches: 7, camo: 9 };
+
+function drawPatches(ctx, skin, w, h) {
+    const layout = PATTERN_LAYOUT[skin.pattern];
+    const cols = skin.patchColors || [];
+    if (!layout || !cols.length) return;
+    ctx.save();
+    ctx.filter = skin.pattern === 'camo' ? 'blur(3px)' : 'blur(3.5px)';
+    layout.forEach((p, i) => {
+        const col = cols[i % cols.length] || {};
+        ctx.save();
+        ctx.translate(p.x * w, p.y * h);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = withAlpha(col.c, col.a);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.rx * w, p.ry * h, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    });
+    ctx.restore();
+}
+
+function drawStrokeList(c, list, w, h, asMask) {
+    if (!list || !list.length) return;
+    c.save();
+    c.lineCap = 'round';
+    c.lineJoin = 'round';
+    for (const s of list) {
+        const pts = s.pts;
+        if (!pts || !pts.length) continue;
+        const lw = Math.max(0.4, (Number(s.w) || 0.06) * w);
+        c.save();
+        if (!asMask && s.soft) c.filter = 'blur(' + Math.max(1, w * 0.05) + 'px)';
+        c.lineWidth = lw;
+        // 'a' is how strong a fade is; missing means full. A marker colour
+        // may carry its own see-through-ness as #rrggbbaa, which is what
+        // the shading tool writes and the canvas understands as it is.
+        c.strokeStyle = asMask
+            ? withAlpha('#000000', s.a === undefined ? 1 : clamp(Number(s.a), 0, 1))
+            : (s.c || '#ffffff');
+        if (pts.length === 1) {
+            c.fillStyle = c.strokeStyle;
+            c.beginPath();
+            c.arc(pts[0][0] * w, pts[0][1] * h, lw / 2, 0, Math.PI * 2);
+            c.fill();
+        } else {
+            c.beginPath();
+            for (let i = 0; i < pts.length; i++) {
+                const x = pts[i][0] * w, y = pts[i][1] * h;
+                if (i === 0) c.moveTo(x, y); else c.lineTo(x, y);
+            }
+            if (s.fill) {
+                c.closePath();
+                c.fillStyle = c.strokeStyle;
+                c.fill();
+            } else {
+                c.stroke();
+            }
+        }
+        c.restore();
+    }
+    c.restore();
+}
+
+let blendCv = null, maskCv = null, hullCv = null;
+let blendKey = null, hullKey = null;
+
+/* The fade layer costs two full-canvas blurs, and at six times zoom that
+   canvas is several million pixels - redoing it every frame ate half the
+   frame budget. So it is cached, and in two halves:
+
+     hullRev  - the blurred repaint of the rocket underneath
+     skinRev  - that, with the smudge shape masked out of it
+
+   Dragging a new fade changes only the second one, so the expensive blur
+   of the hull is not redone on every single frame of the drag. */
+let skinRev = 0, hullRev = 0;
+function touch(what) {
+    skinRev++;
+    if (what !== 'blend') hullRev++;
+}
+
+function drawBlendSmudge(target, skin, w, h, repaintHull, box) {
+    const list = skin.blends;
+    if (!list || !list.length || w < 4) return;
+    const pad = Math.ceil(w * 0.9);
+
+    /* The layer only has to cover where the rocket is AND where you can
+       actually see. At six times zoom the rocket is far larger than the
+       canvas, and building and compositing the whole of it every frame was
+       by a wide margin the most expensive thing this page did - 4.7 million
+       pixels, of which about a tenth were on screen.
+
+       The full-size layer below is exactly the one the game builds, and the
+       trimmed one starts a whole number of pixels into it. That matters:
+       shifting the origin by half a pixel would re-sample every edge, and
+       the preview would no longer be pixel for pixel what a player sees. */
+    const fullW = Math.ceil(w * 2 + pad * 2), fullH = Math.ceil(h * 2 + pad * 2);
+    const baseX = -fullW / 2, baseY = -fullH / 2;
+
+    let x0 = baseX, y0 = baseY, x1 = baseX + fullW, y1 = baseY + fullH;
+    if (box) {
+        x0 = baseX + Math.floor(Math.max(0, box.x0 - baseX));
+        y0 = baseY + Math.floor(Math.max(0, box.y0 - baseY));
+        x1 = Math.min(x1, box.x1);
+        y1 = Math.min(y1, box.y1);
+    }
+    const cw = Math.ceil(x1 - x0), ch = Math.ceil(y1 - y0);
+    if (cw < 2 || ch < 2) return;      // scrolled right off the screen
+
+    if (!blendCv) {
+        blendCv = document.createElement('canvas');
+        maskCv = document.createElement('canvas');
+        hullCv = document.createElement('canvas');
+    }
+    if (blendCv.width !== cw || blendCv.height !== ch) {
+        blendCv.width = maskCv.width = hullCv.width = cw;
+        blendCv.height = maskCv.height = hullCv.height = ch;
+        blendKey = hullKey = null;
+    }
+    const bc = blendCv.getContext('2d');
+    const mc = maskCv.getContext('2d');
+    const hc = hullCv.getContext('2d');
+
+    // Clipped to the hull, or a smudge near the edge leaves a soft halo
+    // hanging in space outside the rocket.
+    const paint = () => {
+        target.save();
+        traceFuselage(target, w, h);
+        target.clip();
+        target.drawImage(blendCv, x0, y0);
+        target.restore();
+    };
+
+    // Nothing has changed since the last one: reuse it whole. The offset is
+    // in the key, so panning while zoomed in rebuilds as it must.
+    const stamp = cw + 'x' + ch + '@' + x0 + ',' + y0;
+    const key = skinRev + '|' + stamp + '|' + list.length;
+    if (key === blendKey) { paint(); return; }
+    blendKey = key;
+
+    // 1. the hull again, blurred. The expensive half, and the half that
+    //    does not change while a new fade is being dragged.
+    const hKey = hullRev + '|' + stamp;
+    if (hKey !== hullKey) {
+        hullKey = hKey;
+        hc.setTransform(1, 0, 0, 1, 0, 0);
+        hc.globalCompositeOperation = 'source-over';
+        hc.clearRect(0, 0, cw, ch);
+        hc.save();
+        hc.translate(-x0, -y0);
+        hc.filter = 'blur(' + Math.max(1.2, w * 0.075) + 'px)';
+        repaintHull(hc);
+        hc.filter = 'none';
+        hc.restore();
+    }
+
+    bc.setTransform(1, 0, 0, 1, 0, 0);
+    bc.globalCompositeOperation = 'source-over';
+    bc.clearRect(0, 0, cw, ch);
+    bc.drawImage(hullCv, 0, 0);
+
+    // 2. the shape of the smudge, softened at its own edges
+    mc.setTransform(1, 0, 0, 1, 0, 0);
+    mc.globalCompositeOperation = 'source-over';
+    mc.clearRect(0, 0, cw, ch);
+    mc.save();
+    mc.translate(-x0, -y0);
+    mc.filter = 'blur(' + Math.max(1, w * 0.04) + 'px)';
+    drawStrokeList(mc, list, w, h, true);
+    mc.filter = 'none';
+    mc.restore();
+
+    // 3. keep only the smudged part. ONE composite, not one per stroke.
+    bc.globalCompositeOperation = 'destination-in';
+    bc.drawImage(maskCv, 0, 0);
+    bc.globalCompositeOperation = 'source-over';
+
+    paint();
+}
+
+function paintHull(c, skin, w, h, t) {
+    const stops = skin.stops || ['#888888', '#aaaaaa', '#999999', '#666666'];
+    const bg = c.createLinearGradient(-w * 0.4, 0, w * 0.4, 0);
+    bg.addColorStop(0, stops[0]); bg.addColorStop(0.35, stops[1]);
+    bg.addColorStop(0.75, stops[2]); bg.addColorStop(1, stops[3]);
+    c.fillStyle = bg;
+    traceFuselage(c, w, h); c.fill();
+
+    c.save();
+    traceFuselage(c, w, h); c.clip();
+
+    if (skin.pattern === 'patches') {
+        drawPatches(c, skin, w, h);
+    }
+    if (skin.pattern === 'camo') {
+        drawPatches(c, skin, w, h);
+        const tHex = skin.tint || '#030805';
+        const s = skin.tintStrength === 0 ? 0 : (Number(skin.tintStrength) || 0.4);
+        const tg = c.createLinearGradient(-w * 0.45, -h * 0.5, w * 0.45, h * 0.4);
+        tg.addColorStop(0, withAlpha(tHex, s * 0.9));
+        tg.addColorStop(0.45, withAlpha(tHex, s * 0.4));
+        tg.addColorStop(1, withAlpha(tHex, s * 1.1));
+        c.fillStyle = tg;
+        c.fillRect(-w, -h * 0.6, w * 2, h * 1.2);
+    } else {
+        c.fillStyle = skin.tip || '#ef4444';
+        c.fillRect(-w, -h * 0.55, w * 2, h * 0.22);
+    }
+
+    if (!skin.hideStripe) {
+        c.fillStyle = skin.stripe || '#3b82f6';
+        c.fillRect(-w, h * 0.26, w * 2, h * 0.06);
+    }
+
+    drawStrokeList(c, skin.decals, w, h, false);
+
+    if (skin.pattern === 'shiny') {
+        const sh = skin.sheen || '#ffffff';
+        const sg = c.createLinearGradient(-w * 0.35, 0, w * 0.35, 0);
+        sg.addColorStop(0, 'rgba(255,255,255,0)');
+        sg.addColorStop(0.28, withAlpha(sh, 0.65));
+        sg.addColorStop(0.42, 'rgba(255,255,255,0.85)');
+        sg.addColorStop(0.58, withAlpha(skin.sheen2 || sh, 0.25));
+        sg.addColorStop(1, 'rgba(255,255,255,0)');
+        c.fillStyle = sg;
+        c.fillRect(-w, -h * 0.6, w * 2, h * 1.2);
+
+        const y = ((t * 0.05) % (h * 1.6)) - h * 0.8;
+        c.save();
+        c.translate(0, y); c.rotate(-0.35);
+        const gg = c.createLinearGradient(0, -10 * (w / 38), 0, 10 * (w / 38));
+        gg.addColorStop(0, 'rgba(255,255,255,0)');
+        gg.addColorStop(0.5, 'rgba(255,255,255,0.65)');
+        gg.addColorStop(1, 'rgba(255,255,255,0)');
+        c.fillStyle = gg;
+        c.fillRect(-w * 1.5, -10 * (w / 38), w * 3, 20 * (w / 38));
+        c.restore();
+    }
+    c.restore();
+}
+
+const DEFAULT_BOOST = {
+    outer: ['#38bdf8', '#f97316', '#ef4444'],
+    core: '#ffffff',
+    length: 1
+};
+
+// Kept separate so the zoomed preview can keep the flame flickering while
+// the rest of the rocket is reused from a cached image.
+function drawFlame(ctx, boost, scale, t, thrusting) {
+    if (!boost) return;
+    const w = 38 * scale, h = 68 * scale;
+    const mul = clamp(Number(boost.length) || 1, 0.4, 2);
+    const len = ((thrusting ? 34 : 26) + Math.sin(t * 0.021) * 7) * mul * scale;
+    const outer = boost.outer || ['#38bdf8', '#f97316', '#ef4444'];
+    const g = ctx.createLinearGradient(0, h * 0.42, 0, h * 0.42 + len);
+    g.addColorStop(0, outer[0]); g.addColorStop(0.5, outer[1]); g.addColorStop(1, withAlpha(outer[2], 0));
+    ctx.beginPath();
+    ctx.moveTo(-w * 0.24, h * 0.42);
+    ctx.quadraticCurveTo(0, h * 0.42 + len * 1.25, w * 0.24, h * 0.42);
+    ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(-w * 0.12, h * 0.42);
+    ctx.quadraticCurveTo(0, h * 0.42 + len * 0.7, w * 0.12, h * 0.42);
+    ctx.closePath(); ctx.fillStyle = boost.core || '#ffffff'; ctx.fill();
+}
+
+function drawRocket(ctx, skin, boost, scale, t, thrusting, box) {
+    const w = 38 * scale, h = 68 * scale;
+    const fin = skin.fin || '#ef4444';
+    const centerFin = skin.centerFin || '#dc2626';
+    const nozzle = skin.nozzle || '#334155';
+
+    // 1. flame
+    drawFlame(ctx, boost, scale, t, thrusting);
+
+    // 2. side fins
+    ctx.fillStyle = fin;
+    ctx.beginPath(); ctx.moveTo(-w * 0.32, h * 0.1); ctx.lineTo(-w * 0.72, h * 0.44); ctx.lineTo(-w * 0.32, h * 0.36); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(w * 0.32, h * 0.1); ctx.lineTo(w * 0.72, h * 0.44); ctx.lineTo(w * 0.32, h * 0.36); ctx.closePath(); ctx.fill();
+
+    if (skin.pattern === 'camo') {
+        ctx.fillStyle = withAlpha(skin.tint || '#030805', 0.42);
+        ctx.beginPath(); ctx.moveTo(-w * 0.32, h * 0.22); ctx.lineTo(-w * 0.72, h * 0.44); ctx.lineTo(-w * 0.32, h * 0.36); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(w * 0.32, h * 0.22); ctx.lineTo(w * 0.72, h * 0.44); ctx.lineTo(w * 0.32, h * 0.36); ctx.closePath(); ctx.fill();
+    }
+    if (skin.pattern === 'shiny') {
+        ctx.fillStyle = withAlpha(skin.sheen || '#ffffff', 0.55);
+        ctx.beginPath(); ctx.moveTo(-w * 0.32, h * 0.12); ctx.lineTo(-w * 0.62, h * 0.38); ctx.lineTo(-w * 0.32, h * 0.24); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(w * 0.32, h * 0.12); ctx.lineTo(w * 0.62, h * 0.38); ctx.lineTo(w * 0.32, h * 0.24); ctx.closePath(); ctx.fill();
+    }
+
+    // 3. centre fin + nozzle
+    ctx.fillStyle = centerFin;
+    ctx.beginPath(); ctx.moveTo(-3 * scale, h * 0.18); ctx.lineTo(0, h * 0.48); ctx.lineTo(3 * scale, h * 0.18); ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = nozzle;
+    ctx.beginPath();
+    ctx.moveTo(-w * 0.25, h * 0.36); ctx.lineTo(-w * 0.3, h * 0.46);
+    ctx.lineTo(w * 0.3, h * 0.46); ctx.lineTo(w * 0.25, h * 0.36);
+    ctx.closePath(); ctx.fill();
+
+    // 4. body, pattern, marker and shine - then the smudge over the top
+    paintHull(ctx, skin, w, h, t);
+    drawBlendSmudge(ctx, skin, w, h, (c) => paintHull(c, skin, w, h, t), box);
+
+    if (skin.outline) {
+        traceFuselage(ctx, w, h);
+        ctx.lineWidth = (Number(skin.outlineWidth) || 1.5) * scale;
+        ctx.strokeStyle = withAlpha(skin.outline, Number(skin.outlineAlpha) || 0.45);
+        ctx.stroke();
+    }
+
+    // 5. cockpit
+    const glass = ctx.createRadialGradient(-3 * scale, -h * 0.08, 2 * scale, 0, -h * 0.05, w * 0.25);
+    glass.addColorStop(0, '#bae6fd'); glass.addColorStop(0.5, '#0284c7'); glass.addColorStop(1, '#0f172a');
+    ctx.fillStyle = glass;
+    ctx.beginPath(); ctx.arc(0, -h * 0.05, w * 0.22, 0, Math.PI * 2); ctx.fill();
+    ctx.lineWidth = 2.5 * scale;
+    ctx.strokeStyle = skin.glassRim || '#475569';
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath(); ctx.ellipse(-w * 0.07, -h * 0.1, 3.5 * scale, 2 * scale, -0.5, 0, Math.PI * 2); ctx.fill();
+}
+
+/* ------------------------------------------------------ asteroids ------ */
+
+// A fixed, non-random rock, so the preview does not jitter while you pick
+// colours. Same shape maths as the game.
+function fixedRock(radius, seed) {
+    const verts = [], craters = [];
+    const n = 11;
+    for (let i = 0; i < n; i++) {
+        const th = (i / n) * Math.PI * 2;
+        const v = 0.78 + ((Math.sin(seed + i * 2.3) + 1) / 2) * 0.3;
+        verts.push({ x: Math.cos(th) * radius * v, y: Math.sin(th) * radius * v });
+    }
+    for (let i = 0; i < 3; i++) {
+        const a = seed + i * 2.1, d = radius * (0.12 + 0.3 * ((Math.sin(seed * 3 + i) + 1) / 2));
+        craters.push({ x: Math.cos(a) * d, y: Math.sin(a) * d, r: radius * (0.15 + 0.1 * ((Math.cos(a) + 1) / 2)) });
+    }
+    return { verts, craters };
+}
+
+function drawRock(ctx, skin, radius, isSniper, seed, angle) {
+    const shape = fixedRock(radius, seed);
+    const trail = skin.sniperTrail || ['#ef4444', '#f97316'];
+    if (isSniper) {
+        const tg = ctx.createLinearGradient(0, -radius * 3.2, 0, radius * 0.5);
+        tg.addColorStop(0, withAlpha(trail[0], 0));
+        tg.addColorStop(0.6, withAlpha(trail[1] || trail[0], 0.35));
+        tg.addColorStop(1, withAlpha(trail[0], 0.75));
+        ctx.fillStyle = tg;
+        ctx.beginPath();
+        ctx.moveTo(-radius * 0.85, 0); ctx.lineTo(0, -radius * 3.4); ctx.lineTo(radius * 0.85, 0);
+        ctx.closePath(); ctx.fill();
+    }
+    ctx.save();
+    ctx.rotate(angle);
+    const g = ctx.createRadialGradient(-radius * 0.3, -radius * 0.3, radius * 0.1, 0, 0, radius);
+    const cols = (isSniper ? skin.sniperBody : skin.body) || ['#94a3b8', '#475569', '#1e293b'];
+    g.addColorStop(0, cols[0]);
+    g.addColorStop(isSniper ? 0.55 : 0.6, cols[1]);
+    g.addColorStop(1, cols[2]);
+    ctx.fillStyle = g;
+    ctx.strokeStyle = isSniper ? (skin.sniperStroke || '#f87171') : (skin.stroke || '#334155');
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    shape.verts.forEach((v, i) => i ? ctx.lineTo(v.x, v.y) : ctx.moveTo(v.x, v.y));
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = withAlpha(skin.crater || '#0f172a', 0.45);
+    shape.craters.forEach(c => { ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2); ctx.fill(); });
+    ctx.restore();
+}
+
+/* ----------------------------------------------------- explosions ------ */
+
+let blastParts = [];
+function fireBlast(skin) {
+    const n = clamp(Math.round(Number(skin.count) || 65), 10, 200);
+    const sp = clamp(Number(skin.speed) || 1, 0.2, 3);
+    const sz = clamp(Number(skin.size) || 1, 0.3, 3);
+    const cols = skin.colors || ['#ffffff'];
+    blastParts = [];
+    for (let i = 0; i < n; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const s = (Math.random() * 380 + 60) * sp * 0.35;
+        blastParts.push({
+            x: 0, y: 0,
+            vx: Math.cos(a) * s, vy: Math.sin(a) * s,
+            size: (Math.random() * 7 + 3) * sz * 0.8,
+            alpha: 1, decay: Math.random() * 1.2 + 0.8,
+            color: cols[Math.floor(Math.random() * cols.length)]
+        });
+    }
+}
+function stepBlast(ctx, dt) {
+    for (let i = blastParts.length - 1; i >= 0; i--) {
+        const p = blastParts[i];
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        p.vy += 220 * dt;
+        p.alpha -= p.decay * dt;
+        if (p.alpha <= 0) { blastParts.splice(i, 1); continue; }
+        ctx.globalAlpha = clamp(p.alpha, 0, 1);
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+}
+
+/* ============================== THE STATE ============================== */
+
+/* What actually travels, per kind. Anything not on the list is dropped,
+   so a design can never smuggle a field into the game's pack. */
+const LOOK = {
+    rocket: ['stops', 'fin', 'centerFin', 'tip', 'stripe', 'nozzle', 'glassRim',
+             'pattern', 'patchColors', 'tint', 'tintStrength', 'sheen', 'sheen2',
+             'outline', 'outlineAlpha', 'outlineWidth', 'hideStripe', 'decals', 'blends'],
+    boost:  ['outer', 'core', 'sparks', 'length'],
+    blast:  ['colors', 'count', 'speed', 'size'],
+    rock:   ['body', 'stroke', 'crater', 'sniperBody', 'sniperStroke', 'sniperTrail']
+};
+const LOOK_FIELDS = LOOK.rocket;     // kept for the drawing code
+
+let designs = [];
+let sel = 0;
+let kind = 'rocket';             // which tab you are on
+let me = { name: '', code: '' };
+
+function newDesign(k, n) {
+    k = k || kind;
+    const info = kindInfo(k);
+    const mine = designs.filter(d => d.kind === k).length;
+    return {
+        kind: k,
+        name: n || ('My ' + info.one + ' ' + (mine + 1)),
+        skin: MAKERS[k](START_COLOUR[k]),
+        savedAt: Date.now(),
+        sentAt: 0
+    };
+}
+function current() { return designs[sel]; }
+
+// Everything of the kind whose tab is showing.
+function inKind() { return designs.filter(d => d.kind === kind); }
+
+// Move the selection onto something of this kind, making one if there is
+// nothing yet, so a tab is never empty with no way forward.
+function selectKind(k) {
+    kind = k;
+    tool = 'none';
+    undoStack = [];
+    resetView();
+    const first = designs.findIndex(d => d.kind === k);
+    if (first < 0) {
+        designs.push(newDesign(k));
+        sel = designs.length - 1;
+    } else if (!current() || current().kind !== k) {
+        sel = first;
+    }
+    touch('all');
+    saveAll(true);
+    render();
+}
+
+function loadAll() {
+    me.name = store.get(KEYS.name) || '';
+    me.code = store.get(KEYS.code) || '';
+    try {
+        const raw = store.get(KEYS.designs);
+        const arr = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(arr) && arr.length) designs = arr.filter(d => d && d.skin);
+    } catch (e) { designs = []; }
+    // Everything saved before there were four kinds was a rocket.
+    designs.forEach(d => { if (!d.kind || !KINDS.some(k => k.key === d.kind)) d.kind = 'rocket'; });
+    if (!designs.length) designs = [newDesign('rocket', 'My first rocket')];
+    sel = clamp(parseInt(store.get(KEYS.sel) || '0', 10) || 0, 0, designs.length - 1);
+    kind = (current() && current().kind) || 'rocket';
+}
+
+let saveTimer = null;
+function saveAll(now) {
+    touch();                 // anything worth saving is worth redrawing
+    const go = () => {
+        const d = current();
+        if (d) d.savedAt = Date.now();
+        const ok = store.set(KEYS.designs, JSON.stringify(designs));
+        store.set(KEYS.sel, String(sel));
+        if (!ok) {
+            say('err', 'This browser will not let the page save.',
+                ['Your work is fine for now, but it will be gone if you close the tab.',
+                 'Private browsing usually causes this. Use a normal window, or press <b>Back up</b> often.']);
+        }
+    };
+    if (now) { clearTimeout(saveTimer); go(); return; }
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(go, 350);
+}
+
+function say(kind, title, lines) {
+    const box = $('msg');
+    let html = '<h4>' + title + '</h4>';
+    if (lines && lines.length) html += '<ul>' + lines.map(l => '<li>' + l + '</li>').join('') + '</ul>';
+    $('msgBody').innerHTML = html;
+    box.className = 'show ' + kind;
+    if (kind === 'ok') setTimeout(() => { if (box.className.indexOf('ok') >= 0) box.classList.remove('show'); }, 6000);
+}
+
+/* ========================== THE SKIN CODE ==============================
+   The payload is base64 on purpose. A skin is JSON, full of commas and
+   quotes, and it may begin with a character a spreadsheet reads as a
+   formula. Base64 turns all of it into one harmless run of letters and
+   digits that survives being pasted anywhere.
+   ======================================================================= */
+
+function cleanSkin(skin, k) {
+    const out = {};
+    for (const f of (LOOK[k || 'rocket'] || LOOK.rocket)) {
+        if (skin[f] === undefined) continue;
+        out[f] = skin[f];
+    }
+    return out;
+}
+
+function toB64(str) {
+    // btoa only handles bytes, so widen anything outside ASCII first.
+    return btoa(unescape(encodeURIComponent(str)));
+}
+function fromB64(b64) {
+    return decodeURIComponent(escape(atob(b64)));
+}
+
+function buildPayload(design) {
+    return {
+        v: 1,
+        kind: design.kind || 'rocket',
+        by: me.name,
+        name: design.name,
+        at: Date.now(),
+        skin: cleanSkin(design.skin, design.kind)
+    };
+}
+
+function skinCode(design) {
+    return toB64(JSON.stringify(buildPayload(design)));
+}
+
+function codeSize(design) {
+    try { return skinCode(design).length; } catch (e) { return 0; }
+}
+
+/* ============================== THE UI ================================= */
+
+const PLAIN_ROCKET = rocketFromColour('#64748b');
+
+function paintThumb(canvas, skin, k) {
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#070a16';
+    ctx.fillRect(0, 0, W, H);
+    ctx.save();
+    if (k === 'boost') {
+        ctx.translate(W / 2, H / 2 - 10);
+        drawRocket(ctx, PLAIN_ROCKET, skin, 0.62, 0, true);
+    } else if (k === 'blast') {
+        // A still of the explosion: a ring of its own colours.
+        const cols = skin.colors || ['#ffffff'];
+        ctx.translate(W / 2, H / 2);
+        for (let i = 0; i < 26; i++) {
+            const a = (i / 26) * Math.PI * 2 + 0.3;
+            const d = 6 + ((i * 37) % 17);
+            ctx.globalAlpha = 0.9 - (d / 34);
+            ctx.fillStyle = cols[i % cols.length];
+            ctx.beginPath(); ctx.arc(Math.cos(a) * d, Math.sin(a) * d, 2.6, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+    } else if (k === 'rock') {
+        ctx.translate(W / 2, H / 2);
+        drawRock(ctx, skin, 20, false, 1.7, 0.4);
+    } else {
+        ctx.translate(W / 2, H / 2 - 4);
+        drawRocket(ctx, skin, DEFAULT_BOOST, 0.74, 0, false);
+    }
+    ctx.restore();
+}
+
+function renderWho() {
+    $('who').innerHTML = me.name
+        ? 'by <b>' + escapeHtml(me.name) + '</b>'
+        : '<b>no name set</b>';
+    $('who').title = 'Click to change your name';
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function renderList() {
+    const box = $('list');
+    box.innerHTML = '';
+
+    const info = kindInfo(kind);
+    const mine = inKind();
+
+    const head = document.createElement('div');
+    head.className = 'listhead';
+    head.innerHTML = '<span>My ' + info.plural + ' (' + mine.length + ')</span>';
+    box.appendChild(head);
+
+    const add = document.createElement('button');
+    add.className = 'tiny';
+    add.textContent = '+ New ' + info.one;
+    add.style.width = '100%';
+    add.style.marginBottom = '12px';
+    add.onclick = () => {
+        if (designs.length >= 60) {
+            say('err', 'That is 60 designs.', ['Send some in, or delete the ones you are finished with.']);
+            return;
+        }
+        designs.push(newDesign(kind));
+        sel = designs.length - 1;
+        tool = 'none';
+        undoStack = [];
+        resetView();
+        touch('all');
+        saveAll(true);
+        render();
+    };
+    box.appendChild(add);
+
+    designs.forEach((d, i) => {
+        if (d.kind !== kind) return;      // one tab at a time
+        const card = document.createElement('div');
+        card.className = 'card' + (i === sel ? ' on' : '');
+        const cv = document.createElement('canvas');
+        cv.width = 56; cv.height = 64;
+        card.appendChild(cv);
+        paintThumb(cv, d.skin, d.kind);
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const n = (d.skin.decals || []).length + (d.skin.blends || []).length;
+        meta.innerHTML =
+            '<div class="nm">' + escapeHtml(d.name) + '</div>' +
+            '<div class="how">' + (d.kind === 'rocket'
+                ? (n ? n + ' stroke' + (n === 1 ? '' : 's') : 'colours only')
+                : kindInfo(d.kind).one) +
+            (d.sentAt ? ' <span class="sent-tag">sent</span>' : '') + '</div>';
+        card.appendChild(meta);
+
+        card.onclick = () => {
+            sel = i; tool = 'none'; undoStack = [];
+            closeDesigns();          // on a phone the list is covering the rocket
+            saveAll(true); render();
+        };
+        box.appendChild(card);
+    });
+}
+
+/* On a phone the colour sections start folded away. All of it on one
+   screen would be a very long scroll past things most people change once. */
+function makeFoldable(fs, startShut) {
+    if (!isPhone) return fs;
+    fs.classList.add('fold');
+    if (startShut) fs.classList.add('shut');
+    const lg = fs.querySelector('legend');
+    if (lg) lg.onclick = () => fs.classList.toggle('shut');
+    return fs;
+}
+
+function field(labelText, node, hint) {
+    const l = document.createElement('label');
+    l.className = 'f';
+    const s = document.createElement('span');
+    s.className = 'lab';
+    s.textContent = labelText;
+    l.appendChild(s);
+    l.appendChild(node);
+    if (hint) {
+        const h = document.createElement('span');
+        h.className = 'hint';
+        h.textContent = hint;
+        l.appendChild(h);
+    }
+    return l;
+}
+
+function colourBox(get, set) {
+    const i = document.createElement('input');
+    i.type = 'color';
+    i.value = get() || '#888888';
+    i.oninput = () => { set(i.value); saveAll(); renderList(); };
+    return i;
+}
+
+function colourRow(labelText, get, set) {
+    const wrap = document.createElement('div');
+    wrap.className = 'swatches';
+    wrap.appendChild(colourBox(get, set));
+    return field(labelText, wrap);
+}
+
+function renderTabs(work) {
+    const nav = document.createElement('div');
+    nav.className = isPhone ? 'toolgrid kindtabs' : 'tools kindtabs';
+    if (isPhone) nav.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    KINDS.forEach(k => {
+        const b = document.createElement('button');
+        b.className = 'tiny' + (kind === k.key ? ' on' : '');
+        b.textContent = k.tab;
+        const n = designs.filter(x => x.kind === k.key).length;
+        if (n) b.textContent += ' ' + n;
+        b.onclick = () => selectKind(k.key);
+        nav.appendChild(b);
+    });
+    work.appendChild(nav);
+}
+
+function renderWork() {
+    const work = $('work');
+    work.innerHTML = '';
+    renderTabs(work);
+    const d = current();
+    if (!d) return;
+    const skin = d.skin;
+    const info = kindInfo(d.kind);
+
+    const row = document.createElement('div');
+    row.className = 'row';
+
+    /* ------------------------------------------------ the rocket itself */
+    const stage = document.createElement('div');
+    stage.className = 'stage';
+    const cv = document.createElement('canvas');
+    cv.id = 'stageCanvas';
+    cv.width = 340; cv.height = 400;      // replaced by sizeCanvas() below
+    cv.style.cursor = cursorFor(tool);
+    stage.appendChild(cv);
+    const cap = document.createElement('div');
+    cap.className = 'cap';
+    cap.textContent =
+        d.kind === 'boost' ? 'the flame on a plain rocket, at full thrust'
+        : d.kind === 'blast' ? 'tap it to set it off again'
+        : d.kind === 'rock' ? 'normal rock on the left, the homing one on the right'
+        : 'exactly how it looks in the game';
+    stage.appendChild(cap);
+
+    if (d.kind === 'rocket') {
+        stage.appendChild(buildToolbar(skin));
+        attachDrawing(cv);
+    } else {
+        // Only the rocket is a surface you can draw on. The others are a
+        // flame, a cloud of sparks and a lump of rock.
+        stage.appendChild(buildZoomBar());
+        attachViewOnly(cv);
+        if (d.kind === 'blast') {
+            cv.style.cursor = 'pointer';
+            cv.onclick = () => fireBlast(skin);
+            fireBlast(skin);
+        }
+    }
+    row.appendChild(stage);
+
+    /* ----------------------------------------------------- the controls */
+    const fields = document.createElement('div');
+    fields.className = 'fields';
+
+    // --- name and the one-click colour
+    const fs1 = document.createElement('fieldset');
+    const lg1 = document.createElement('legend');
+    lg1.textContent = 'This design';
+    fs1.appendChild(lg1);
+
+    const nameBox = document.createElement('input');
+    nameBox.type = 'text';
+    nameBox.maxLength = 28;
+    nameBox.value = d.name;
+    nameBox.oninput = () => {
+        d.name = nameBox.value.slice(0, 28);
+        saveAll();
+        renderList();
+    };
+    fs1.appendChild(field('Name it', nameBox, 'What players will see this ' + info.one + ' called.'));
+
+    const baseWrap = document.createElement('div');
+    baseWrap.className = 'swatches';
+    const baseCol = document.createElement('input');
+    baseCol.type = 'color';
+    baseCol.value = (skin.stops && skin.stops[2]) || (skin.outer && skin.outer[1])
+        || (skin.colors && skin.colors[0]) || (skin.body && skin.body[1]) || START_COLOUR[d.kind];
+    baseWrap.appendChild(baseCol);
+    const baseBtn = document.createElement('button');
+    baseBtn.className = 'tiny primary';
+    baseBtn.textContent = 'Recolour the whole ' + info.one;
+    baseBtn.onclick = () => {
+        const keepPattern = skin.pattern;
+        const fresh = MAKERS[d.kind](baseCol.value);
+        for (const k in fresh) skin[k] = fresh[k];
+        if (d.kind === 'rocket') {
+            skin.pattern = keepPattern;
+            if (PATCH_COUNT[keepPattern]) skin.patchColors = autoPatches(skin, PATCH_COUNT[keepPattern], 0);
+        }
+        if (d.kind === 'blast') fireBlast(skin);
+        saveAll(); render();
+    };
+    baseWrap.appendChild(baseBtn);
+    fs1.appendChild(field('Start from one colour', baseWrap,
+        'Pick a colour, press the button, and every part of the ' + info.one +
+        ' is worked out for you. Then change whatever you want below.'));
+    fields.appendChild(makeFoldable(fs1, false));
+
+    /* ---------------------------- everything that is not a rocket ----- */
+    if (d.kind !== 'rocket') {
+        const fsk = document.createElement('fieldset');
+        const lgk = document.createElement('legend');
+        lgk.textContent = 'Colours';
+        fsk.appendChild(lgk);
+
+        // A list of colours you can lengthen or shorten.
+        const colourList = (arr, labelText, hint, fixedLength) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'swatches';
+            arr.forEach((c, i) => {
+                const inp = document.createElement('input');
+                inp.type = 'color';
+                inp.value = c;
+                inp.oninput = () => { arr[i] = inp.value; saveAll(); renderList(); };
+                wrap.appendChild(inp);
+            });
+            if (!fixedLength) {
+                const add = document.createElement('button');
+                add.className = 'tiny';
+                add.textContent = '+';
+                add.title = 'One more colour';
+                add.onclick = () => {
+                    if (arr.length >= 8) return;
+                    arr.push(shade(arr[arr.length - 1] || '#ffffff', 0.15));
+                    saveAll(); renderWork();
+                };
+                wrap.appendChild(add);
+                const rem = document.createElement('button');
+                rem.className = 'tiny';
+                rem.textContent = '−';
+                rem.title = 'One fewer';
+                rem.disabled = arr.length <= 2;
+                rem.onclick = () => { arr.pop(); saveAll(); renderWork(); };
+                wrap.appendChild(rem);
+            }
+            return field(labelText, wrap, hint);
+        };
+
+        const numRow = (labelText, key, min, max, step, dflt, hint, fmt) => {
+            const v = skin[key] === undefined ? dflt : Number(skin[key]);
+            return field(labelText, slider(min, max, step, v, '100%',
+                nv => {
+                    skin[key] = nv;
+                    if (d.kind === 'blast') fireBlast(skin);
+                    saveAll(); renderList();
+                }, fmt || (x => x)), hint);
+        };
+
+        if (d.kind === 'boost') {
+            if (!skin.outer) skin.outer = boostFromColour('#f97316').outer;
+            if (!skin.sparks) skin.sparks = boostFromColour('#f97316').sparks;
+            fsk.appendChild(colourList(skin.outer, 'Flame, engine end to tip',
+                'First is nearest the engine. The last one fades away to nothing.', true));
+            fsk.appendChild(colourRow('Hot centre', () => skin.core || '#ffffff', v => skin.core = v));
+            fsk.appendChild(colourList(skin.sparks, 'Sparks left behind', 'Each spark picks one of these.'));
+            fsk.appendChild(numRow('Flame length', 'length', 0.4, 2, 0.05, 1,
+                '1 is normal. 2 is a long dramatic flame.', x => Math.round(x * 100) + '%'));
+        } else if (d.kind === 'blast') {
+            if (!skin.colors) skin.colors = blastFromColour('#f59e0b').colors;
+            fsk.appendChild(colourList(skin.colors, 'Colours of the pieces',
+                'Each piece picks one of these at random.'));
+            fsk.appendChild(numRow('How many pieces', 'count', 10, 200, 5, 70,
+                '70 is normal. 200 is the most the game allows.', x => Math.round(x)));
+            fsk.appendChild(numRow('How fast they fly', 'speed', 0.2, 3, 0.05, 1, '', x => Math.round(x * 100) + '%'));
+            fsk.appendChild(numRow('How big they are', 'size', 0.3, 3, 0.05, 1, '', x => Math.round(x * 100) + '%'));
+            const again = document.createElement('button');
+            again.className = 'tiny primary';
+            again.textContent = 'Play it again';
+            again.onclick = () => fireBlast(skin);
+            fsk.appendChild(field('', again));
+        } else if (d.kind === 'rock') {
+            if (!skin.body) skin.body = rockFromColour('#64748b').body;
+            if (!skin.sniperBody) skin.sniperBody = rockFromColour('#64748b').sniperBody;
+            if (!skin.sniperTrail) skin.sniperTrail = rockFromColour('#64748b').sniperTrail;
+            fsk.appendChild(colourList(skin.body, 'Rock, lit side to dark side', '', true));
+            const g2 = document.createElement('div');
+            g2.className = 'grid2';
+            g2.appendChild(colourRow('Edge', () => skin.stroke || '#334155', v => skin.stroke = v));
+            g2.appendChild(colourRow('Craters', () => skin.crater || '#0f172a', v => skin.crater = v));
+            fsk.appendChild(g2);
+            const hr = document.createElement('p');
+            hr.className = 'note';
+            hr.innerHTML = 'The <b>homing rock</b> is the fast one that chases you. It gets its own colours so it still reads as dangerous.';
+            fsk.appendChild(hr);
+            fsk.appendChild(colourList(skin.sniperBody, 'Homing rock, lit to dark', '', true));
+            const g3 = document.createElement('div');
+            g3.className = 'grid2';
+            g3.appendChild(colourRow('Its edge', () => skin.sniperStroke || '#f87171', v => skin.sniperStroke = v));
+            fsk.appendChild(g3);
+            fsk.appendChild(colourList(skin.sniperTrail, 'Its trail', '', true));
+        }
+        fields.appendChild(makeFoldable(fsk, false));
+
+        row.appendChild(fields);
+        work.appendChild(row);
+        addHousekeeping(fields, d, skin);
+        sizeCanvas();
+        return;
+    }
+
+    // --- pattern
+    const fs2 = document.createElement('fieldset');
+    const lg2 = document.createElement('legend');
+    lg2.textContent = 'Finish';
+    fs2.appendChild(lg2);
+
+    const pat = document.createElement('select');
+    [['none', 'Plain'], ['patches', 'Patches'], ['camo', 'Camo'], ['shiny', 'Shiny metal']]
+        .forEach(([v, t]) => {
+            const o = document.createElement('option');
+            o.value = v; o.textContent = t;
+            pat.appendChild(o);
+        });
+    pat.value = skin.pattern || 'none';
+    pat.onchange = () => {
+        skin.pattern = pat.value;
+        if (PATCH_COUNT[skin.pattern]) {
+            skin.patchColors = autoPatches(skin, PATCH_COUNT[skin.pattern], 0);
+        } else {
+            delete skin.patchColors;
+        }
+        if (skin.pattern === 'camo') {
+            if (!skin.tint) skin.tint = '#030805';
+            if (skin.tintStrength === undefined) skin.tintStrength = 0.4;
+        }
+        if (skin.pattern === 'shiny' && !skin.sheen) skin.sheen = '#ffffff';
+        saveAll(); render();
+    };
+    fs2.appendChild(field('Pattern', pat));
+
+    if (PATCH_COUNT[skin.pattern]) {
+        const shuffle = document.createElement('button');
+        shuffle.className = 'tiny';
+        shuffle.textContent = 'Shuffle the blotches';
+        let j = 1;
+        shuffle.onclick = () => {
+            skin.patchColors = autoPatches(skin, PATCH_COUNT[skin.pattern], j++);
+            saveAll(); renderList();
+        };
+        fs2.appendChild(field('Blotches', shuffle, 'Worked out from your colours. Press for a different arrangement.'));
+    }
+    if (skin.pattern === 'camo') {
+        fs2.appendChild(colourRow('Shadow colour', () => skin.tint || '#030805', v => skin.tint = v));
+        const r = document.createElement('input');
+        r.type = 'range'; r.min = 0; r.max = 0.9; r.step = 0.05;
+        r.value = skin.tintStrength === undefined ? 0.4 : skin.tintStrength;
+        r.oninput = () => { skin.tintStrength = parseFloat(r.value); saveAll(); renderList(); };
+        fs2.appendChild(field('How dark', r));
+    }
+    if (skin.pattern === 'shiny') {
+        fs2.appendChild(colourRow('Shine colour', () => skin.sheen || '#ffffff', v => skin.sheen = v));
+        fs2.appendChild(colourRow('Second shine', () => skin.sheen2 || skin.sheen || '#ffffff', v => skin.sheen2 = v));
+    }
+
+    const ck = document.createElement('label');
+    ck.className = 'ck';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = !skin.hideStripe;
+    cb.onchange = () => { skin.hideStripe = !cb.checked; saveAll(); renderList(); };
+    ck.appendChild(cb);
+    ck.appendChild(document.createTextNode('Show the stripe across the middle'));
+    fs2.appendChild(ck);
+    fields.appendChild(makeFoldable(fs2, false));
+
+    // --- every individual colour
+    const fs3 = document.createElement('fieldset');
+    const lg3 = document.createElement('legend');
+    lg3.textContent = 'Every part';
+    fs3.appendChild(lg3);
+
+    const g = document.createElement('div');
+    g.className = 'grid2';
+    const stops = skin.stops || ['#888888', '#aaaaaa', '#999999', '#666666'];
+    [['Body, left edge', 0], ['Body, lit side', 1], ['Body, middle', 2], ['Body, right edge', 3]]
+        .forEach(([lab, i]) => {
+            g.appendChild(colourRow(lab, () => stops[i], v => { stops[i] = v; skin.stops = stops; }));
+        });
+    g.appendChild(colourRow('Side fins', () => skin.fin || '#ef4444', v => skin.fin = v));
+    g.appendChild(colourRow('Centre fin', () => skin.centerFin || '#dc2626', v => skin.centerFin = v));
+    g.appendChild(colourRow('Nose band', () => skin.tip || '#ef4444', v => skin.tip = v));
+    g.appendChild(colourRow('Stripe', () => skin.stripe || '#3b82f6', v => skin.stripe = v));
+    g.appendChild(colourRow('Engine', () => skin.nozzle || '#334155', v => skin.nozzle = v));
+    g.appendChild(colourRow('Window rim', () => skin.glassRim || '#475569', v => skin.glassRim = v));
+    fs3.appendChild(g);
+    fields.appendChild(makeFoldable(fs3, true));
+
+    addHousekeeping(fields, d, skin);
+
+    row.appendChild(fields);
+    work.appendChild(row);
+    sizeCanvas();
+}
+
+// The size meter and the delete button, the same for every kind - except
+// that only a rocket has a drawing budget to report.
+function addHousekeeping(fields, d, skin) {
+    const fs4 = document.createElement('fieldset');
+    const lg4 = document.createElement('legend');
+    lg4.textContent = 'Finishing up';
+    fs4.appendChild(lg4);
+
+    if (d.kind === 'rocket') {
+        const used = pointsUsed(skin);
+        const pct = clamp(used / MAX_POINTS, 0, 1);
+        const m = document.createElement('div');
+        m.className = 'meter' + (pct >= 1 ? ' full' : pct > 0.7 ? ' warn' : '');
+        m.innerHTML =
+            '<div>Detail used: ' + Math.round(pct * 100) + '%' +
+            (pct >= 1 ? ' &mdash; full. Rub something out to draw more.'
+                : pct > 0.7 ? ' &mdash; filling up. One long line costs less than lots of short ones.' : '') +
+            '</div><div class="bar"><i style="width:' + Math.round(pct * 100) + '%"></i></div>' +
+            '<div style="margin-top:6px">Code size: ' + Math.round(codeSize(d) / 1024 * 10) / 10 + ' KB</div>';
+        fs4.appendChild(m);
+    } else {
+        const m = document.createElement('div');
+        m.className = 'meter';
+        m.innerHTML = '<div>Code size: ' + Math.round(codeSize(d) / 1024 * 10) / 10 +
+            ' KB &mdash; nothing to worry about on a ' + kindInfo(d.kind).one + '.</div>';
+        fs4.appendChild(m);
+    }
+
+    const dup = document.createElement('button');
+    dup.className = 'tiny';
+    dup.textContent = 'Make a copy';
+    dup.style.marginTop = '12px';
+    dup.onclick = () => {
+        if (designs.length >= 60) { say('err', 'That is 60 designs.', []); return; }
+        const copy = JSON.parse(JSON.stringify(d));
+        copy.name = (d.name + ' copy').slice(0, 28);
+        copy.sentAt = 0;
+        designs.splice(sel + 1, 0, copy);
+        sel = sel + 1;
+        touch('all'); saveAll(true); render();
+    };
+    fs4.appendChild(dup);
+
+    const del = document.createElement('button');
+    del.className = 'tiny danger';
+    del.textContent = 'Delete this ' + kindInfo(d.kind).one;
+    del.style.marginTop = '12px';
+    del.style.marginLeft = '8px';
+    del.onclick = () => {
+        if (!confirm('Delete "' + d.name + '"? This cannot be undone.')) return;
+        designs.splice(sel, 1);
+        if (!designs.length) designs = [newDesign('rocket', 'My first rocket')];
+        const next = designs.findIndex(x => x.kind === kind);
+        sel = next >= 0 ? next : 0;
+        kind = designs[sel].kind;
+        tool = 'none'; undoStack = []; resetView();
+        touch('all'); saveAll(true); render();
+    };
+    fs4.appendChild(del);
+    fields.appendChild(makeFoldable(fs4, false));
+}
+
+/* On a phone the rocket gets the width of the screen and a bit over half
+   its height - enough to work on, while leaving the tools in reach of a
+   thumb without scrolling. On a computer it keeps a fixed, comfortable
+   size. Re-run whenever the window changes, including turning the phone. */
+function sizeCanvas() {
+    const cv = $('stageCanvas');
+    if (!cv) return;
+    let w, h;
+    if (isPhone) {
+        const stage = cv.parentElement;
+        w = Math.max(240, Math.floor(stage.clientWidth || window.innerWidth - 24));
+        // A share of the height rather than a fixed size, so a phone held
+        // sideways does not get a rocket taller than its own screen.
+        h = Math.round(clamp(window.innerHeight * 0.52, 200, 520));
+    } else {
+        w = 340; h = 400;
+    }
+    if (cv.width !== w || cv.height !== h) {
+        cv.width = w; cv.height = h;
+        rocketKey = null; blendKey = null; hullKey = null;
+    }
+}
+
+/* ===================== THE MARKER AND THE BLEND TOOL ==================== */
+
+const PREVIEW_SCALE = 2.1;
+
+// none | move | marker | airbrush | shade | blend | shape | erase
+let tool = 'none';
+let brush = {
+    color: '#ffffff',
+    size: 0.07,
+    shadeColor: '#ffd166',
+    shadeStrength: 0.3,
+    fadeStrength: 1,
+    shape: 'circle',          // circle | square | triangle | star
+    fillShape: false
+};
+let drawingStroke = null;
+let undoStack = [];
+let budgetWarned = false;        // only nag once per stroke
+
+/* ---------------------------------------------------------------- the view
+
+   Zoom and pan move the CAMERA, never the drawing. A stroke is stored as a
+   fraction of the rocket, so zooming in to tidy up one corner changes
+   nothing about where that stroke lands in the game. */
+const ZOOM_MIN = 0.6, ZOOM_MAX = 6;
+let view = { zoom: 1, px: 0, py: 0 };
+
+function viewScale() { return PREVIEW_SCALE * view.zoom; }
+
+function previewSize() {
+    const s = viewScale();
+    return { w: 38 * s, h: 68 * s };
+}
+
+function viewCentre(cv) {
+    return { cx: cv.width / 2 + view.px, cy: (cv.height / 2 - 10) + view.py };
+}
+
+function round3(v) { return Math.round(v * 1000) / 1000; }
+
+// Canvas pixels -> a position on the rocket, as a fraction of its size, so a
+// stroke drawn here lands in the same spot at any size in the game. Three
+// decimals: finer than anyone can see, and a third of the file size.
+function toSkinSpace(ev, cv) {
+    const r = cv.getBoundingClientRect();
+    const px = (ev.clientX - r.left) * (cv.width / r.width);
+    const py = (ev.clientY - r.top) * (cv.height / r.height);
+    const { w, h } = previewSize();
+    const { cx, cy } = viewCentre(cv);
+    return [round3((px - cx) / w), round3((py - cy) / h)];
+}
+
+function resetView() { view = { zoom: 1, px: 0, py: 0 }; }
+
+// Zoom about the pointer, so whatever is under it stays under it. Zooming
+// to the middle of the canvas instead would throw away the detail you were
+// looking at, every time.
+function zoomAt(cv, ev, factor) {
+    const before = toSkinSpace(ev, cv);
+    view.zoom = clamp(view.zoom * factor, ZOOM_MIN, ZOOM_MAX);
+    const after = toSkinSpace(ev, cv);
+    const { w, h } = previewSize();
+    view.px += (after[0] - before[0]) * w;
+    view.py += (after[1] - before[1]) * h;
+    clampPan(cv);
+}
+
+// Keeps the rocket from being dragged off into nothing.
+function clampPan(cv) {
+    const { w, h } = previewSize();
+    const limX = cv.width / 2 + w * 0.8;
+    const limY = cv.height / 2 + h * 0.8;
+    view.px = clamp(view.px, -limX, limX);
+    view.py = clamp(view.py, -limY, limY);
+}
+
+/* --------------------------------------------------------------- shapes
+
+   A shape is an ordinary stroke whose points happen to sit on a circle or
+   a square. Nothing new has to be understood by anything downstream, and a
+   square costs four points where drawing one freehand costs a hundred. */
+function shapePoints(kind, cx, cy, rx, ry) {
+    const pts = [];
+    const push = (a, r) => pts.push([
+        round3(cx + Math.cos(a) * rx * (r === undefined ? 1 : r)),
+        round3(cy + Math.sin(a) * ry * (r === undefined ? 1 : r))
+    ]);
+
+    if (kind === 'circle') {
+        const n = 28;
+        for (let i = 0; i < n; i++) push((i / n) * Math.PI * 2 - Math.PI / 2);
+    } else if (kind === 'square') {
+        pts.push([round3(cx - rx), round3(cy - ry)]);
+        pts.push([round3(cx + rx), round3(cy - ry)]);
+        pts.push([round3(cx + rx), round3(cy + ry)]);
+        pts.push([round3(cx - rx), round3(cy + ry)]);
+    } else if (kind === 'triangle') {
+        pts.push([round3(cx), round3(cy - ry)]);
+        pts.push([round3(cx + rx), round3(cy + ry)]);
+        pts.push([round3(cx - rx), round3(cy + ry)]);
+    } else if (kind === 'star') {
+        for (let i = 0; i < 10; i++) {
+            push((i / 10) * Math.PI * 2 - Math.PI / 2, i % 2 ? 0.45 : 1);
+        }
+    }
+    // Closed, so an outline joins up instead of leaving a gap.
+    if (pts.length > 2) pts.push([pts[0][0], pts[0][1]]);
+    return pts;
+}
+
+// How many points the tool is about to spend, before it spends them.
+function shapeCost(kind) {
+    return kind === 'circle' ? 29 : kind === 'star' ? 11 : kind === 'square' ? 5 : 4;
+}
+
+/* The colour a shading stroke is written as: the chosen colour with its
+   strength baked into the last two digits. The canvas reads #rrggbbaa on
+   its own, so the game needs to know nothing about shading at all. */
+function shadeColour() {
+    const a = clamp(brush.shadeStrength, 0.03, 1);
+    const hex = Math.round(a * 255).toString(16).padStart(2, '0');
+    return brush.shadeColor + hex;
+}
+
+function strokeDistanceTo(stroke, p) {
+    let best = Infinity;
+    for (const q of stroke.pts || []) {
+        const d = Math.hypot(q[0] - p[0], q[1] - p[1]);
+        if (d < best) best = d;
+    }
+    return best;
+}
+
+function eraseAt(skin, p) {
+    let bestList = null, bestIdx = -1, bestD = 0.09;
+    ['decals', 'blends'].forEach(k => {
+        (skin[k] || []).forEach((s, i) => {
+            const d = strokeDistanceTo(s, p);
+            if (d < bestD) { bestD = d; bestList = k; bestIdx = i; }
+        });
+    });
+    if (bestList === null) return false;
+    skin[bestList].splice(bestIdx, 1);
+    if (!skin[bestList].length) delete skin[bestList];
+    return true;
+}
+
+let panning = null;              // { x, y, px, py } while dragging the view
+let shaping = null;              // { stroke, anchor } while dragging a shape
+let spaceHeld = false;
+let dragRev = 0;                 // the cached image to hold while drawing
+
+/* ------------------------------------------------- two fingers on glass
+
+   One finger draws. Two fingers zoom and move at once, which is the
+   gesture everybody already knows and the only sensible one on a phone -
+   there is no wheel, no middle button and no space bar.
+
+   Putting a second finger down also TAKES BACK the stroke the first finger
+   started. Without that, every pinch would leave a stray mark where your
+   first finger happened to land. */
+const touches = new Map();
+let pinch = null;
+
+function pinchState() {
+    const pts = [...touches.values()];
+    const dx = pts[0].x - pts[1].x, dy = pts[0].y - pts[1].y;
+    return {
+        dist: Math.max(1, Math.hypot(dx, dy)),
+        mx: (pts[0].x + pts[1].x) / 2,
+        my: (pts[0].y + pts[1].y) / 2
+    };
+}
+
+// Throw away the stroke that was begun a moment before the second finger.
+function abandonStroke() {
+    if (!drawingStroke) return;
+    const d = current();
+    if (d) {
+        for (const k of ['decals', 'blends']) {
+            const list = d.skin[k];
+            if (!list) continue;
+            const i = list.indexOf(drawingStroke);
+            if (i >= 0) {
+                list.splice(i, 1);
+                if (!list.length) delete d.skin[k];
+            }
+        }
+    }
+    drawingStroke = null;
+    shaping = null;
+    budgetWarned = false;
+    touch('all');
+}
+
+function attachDrawing(cv) {
+    const stop = ev => { ev.preventDefault(); ev.stopPropagation(); };
+
+    // The wheel zooms. Passive has to be off or the browser scrolls the
+    // page out from under you instead.
+    cv.addEventListener('wheel', ev => {
+        ev.preventDefault();
+        zoomAt(cv, ev, ev.deltaY < 0 ? 1.12 : 1 / 1.12);
+        syncZoomUI();
+    }, { passive: false });
+
+    cv.addEventListener('pointerdown', ev => {
+        const d = current();
+        if (!d) return;
+        const skin = d.skin;
+
+        if (ev.pointerType === 'touch') {
+            touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+            if (touches.size === 2) {
+                stop(ev);
+                abandonStroke();
+                panning = null;
+                const s = pinchState();
+                pinch = { dist: s.dist, mx: s.mx, my: s.my, zoom: view.zoom, px: view.px, py: view.py };
+                return;
+            }
+            if (touches.size > 2) { stop(ev); return; }
+        }
+
+        // Pan: the Move tool, the middle button, or space held down. Three
+        // ways because people reach for different ones, and on a phone only
+        // the first exists.
+        if (tool === 'move' || ev.button === 1 || spaceHeld) {
+            stop(ev);
+            panning = { x: ev.clientX, y: ev.clientY, px: view.px, py: view.py };
+            try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
+            return;
+        }
+        if (tool === 'none') return;
+        stop(ev);
+        // Whatever is on screen now is what stays on screen until this
+        // stroke is finished.
+        dragRev = skinRev;
+        const p = toSkinSpace(ev, cv);
+
+        if (tool === 'erase') {
+            if (eraseAt(skin, p)) { saveAll(); renderList(); renderWork(); }
+            return;
+        }
+
+        const key = tool === 'blend' ? 'blends' : 'decals';
+        if (!skin[key]) skin[key] = [];
+        if (skin[key].length >= 80) {
+            say('err', 'That is as many strokes as one rocket can hold.',
+                ['80 of each kind. Rub some out, or draw longer lines instead of lots of short ones.']);
+            return;
+        }
+
+        const need = tool === 'shape' ? shapeCost(brush.shape) : 1;
+        if (pointsUsed(skin) + need > MAX_POINTS) {
+            say('err', 'This rocket is as detailed as it can get.',
+                ['Rub out some strokes to make room, or start a second design.',
+                 'The bar under the rocket shows how much is left.']);
+            return;
+        }
+
+        if (tool === 'shape') {
+            // Starts as a dot and grows while you drag, so you can see the
+            // size you are getting before you commit to it.
+            drawingStroke = brush.fillShape
+                ? { c: brush.color, w: 0.01, fill: true, pts: shapePoints(brush.shape, p[0], p[1], 0.02, 0.02) }
+                : { c: brush.color, w: brush.size, pts: shapePoints(brush.shape, p[0], p[1], 0.02, 0.02) };
+            shaping = { anchor: p };
+        } else if (tool === 'blend') {
+            drawingStroke = {
+                w: Math.max(0.08, brush.size * 2.4),
+                a: round3(clamp(brush.fadeStrength, 0.05, 1)),
+                pts: [p]
+            };
+        } else if (tool === 'shade') {
+            drawingStroke = { c: shadeColour(), w: brush.size, soft: true, pts: [p] };
+        } else {
+            drawingStroke = { c: brush.color, w: brush.size, pts: [p] };
+            if (tool === 'airbrush') drawingStroke.soft = true;
+        }
+
+        skin[key].push(drawingStroke);
+        touch(tool === 'blend' ? 'blend' : 'all');
+        try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
+    });
+
+    cv.addEventListener('pointermove', ev => {
+        if (ev.pointerType === 'touch' && touches.has(ev.pointerId)) {
+            touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+        }
+
+        // Two fingers: zoom by how far apart they are, move by where their
+        // middle went. Both at once, about the point between them, which is
+        // what makes it feel like you are holding the thing.
+        if (pinch && touches.size >= 2) {
+            stop(ev);
+            const s = pinchState();
+            const r = cv.getBoundingClientRect();
+            const k = cv.width / r.width;
+            const next = clamp(pinch.zoom * (s.dist / pinch.dist), ZOOM_MIN, ZOOM_MAX);
+            const grew = next / pinch.zoom;
+
+            // Keep whatever was between the fingers between the fingers.
+            const anchorX = (pinch.mx - r.left) * k - (cv.width / 2 + pinch.px);
+            const anchorY = (pinch.my - r.top) * k - ((cv.height / 2 - 10) + pinch.py);
+            view.zoom = next;
+            view.px = pinch.px + (s.mx - pinch.mx) * k + anchorX * (1 - grew);
+            view.py = pinch.py + (s.my - pinch.my) * k + anchorY * (1 - grew);
+            clampPan(cv);
+            syncZoomUI();
+            return;
+        }
+
+        if (panning) {
+            stop(ev);
+            const r = cv.getBoundingClientRect();
+            const k = cv.width / r.width;
+            view.px = panning.px + (ev.clientX - panning.x) * k;
+            view.py = panning.py + (ev.clientY - panning.y) * k;
+            clampPan(cv);
+            return;
+        }
+        if (!drawingStroke) return;
+        stop(ev);
+        const p = toSkinSpace(ev, cv);
+
+        if (shaping) {
+            // Resize about the point you pressed on.
+            const rx = Math.max(0.02, Math.abs(p[0] - shaping.anchor[0]));
+            const ry = Math.max(0.02, Math.abs(p[1] - shaping.anchor[1]));
+            drawingStroke.pts = shapePoints(brush.shape, shaping.anchor[0], shaping.anchor[1], rx, ry);
+            touch();
+            return;
+        }
+
+        const last = drawingStroke.pts[drawingStroke.pts.length - 1];
+        // Thin the points as they are collected. Every wobble of the mouse
+        // would otherwise end up in the file, and in the size limit. The
+        // spacing is in rocket fractions, so zooming in gives you finer
+        // control over the shape without costing a single extra point.
+        if (Math.hypot(p[0] - last[0], p[1] - last[1]) < 0.012) return;
+        if (drawingStroke.pts.length >= 400) return;
+        // Out of budget. The line simply stops following the mouse, which
+        // is a far kinder way to find out than being refused at the end.
+        const d = current();
+        if (d && pointsUsed(d.skin) >= MAX_POINTS) {
+            if (!budgetWarned) {
+                budgetWarned = true;
+                say('err', 'That is all the detail this rocket can hold.',
+                    ['Let go and rub something out to make room.']);
+            }
+            return;
+        }
+        drawingStroke.pts.push(p);
+        touch(tool === 'blend' ? 'blend' : 'all');
+    });
+
+    const finish = ev => {
+        if (ev && ev.pointerType === 'touch') {
+            touches.delete(ev.pointerId);
+            if (pinch) {
+                stop(ev);
+                // Only let go of the pinch when both fingers are off, or
+                // lifting one would start drawing a line from the other.
+                if (touches.size === 0) pinch = null;
+                return;
+            }
+        }
+        if (panning) {
+            if (ev) stop(ev);
+            panning = null;
+            return;
+        }
+        if (!drawingStroke) return;
+        if (ev) stop(ev);
+        budgetWarned = false;
+        shaping = null;
+        undoStack.push(tool === 'blend' ? 'blends' : 'decals');
+        drawingStroke = null;
+        saveAll();
+        renderList();
+        renderWork();
+    };
+    cv.addEventListener('pointerup', finish);
+    cv.addEventListener('pointercancel', finish);
+    cv.addEventListener('pointerleave', () => { if (drawingStroke || panning) finish(null); });
+    cv.addEventListener('contextmenu', ev => ev.preventDefault());
+}
+
+// Space to pan, held down, without losing the tool you were using.
+window.addEventListener('keydown', ev => {
+    if (ev.code === 'Space' && !spaceHeld && ev.target.tagName !== 'INPUT'
+        && ev.target.tagName !== 'TEXTAREA') {
+        spaceHeld = true;
+        ev.preventDefault();
+        const cv = $('stageCanvas');
+        if (cv) cv.style.cursor = 'grab';
+    }
+});
+window.addEventListener('keyup', ev => {
+    if (ev.code === 'Space') {
+        spaceHeld = false;
+        const cv = $('stageCanvas');
+        if (cv) cv.style.cursor = cursorFor(tool);
+    }
+});
+
+function cursorFor(t) {
+    if (t === 'move') return 'grab';
+    if (t === 'none') return 'default';
+    return 'crosshair';
+}
+
+function syncZoomUI() {
+    const s = $('zoomSlider'), o = $('zoomOut');
+    if (s) s.value = view.zoom;
+    if (o) o.textContent = Math.round(view.zoom * 100) + '%';
+}
+
+function slider(min, max, step, val, width, onInput, fmt) {
+    const wrap = document.createElement('span');
+    wrap.style.display = 'inline-flex';
+    wrap.style.alignItems = 'center';
+    wrap.style.gap = '6px';
+    const r = document.createElement('input');
+    r.type = 'range'; r.min = min; r.max = max; r.step = step;
+    r.value = val; r.style.width = width;
+    const out = document.createElement('span');
+    out.className = 'pct';
+    out.textContent = fmt(val);
+    r.oninput = () => { const v = parseFloat(r.value); out.textContent = fmt(v); onInput(v); };
+    wrap.appendChild(r); wrap.appendChild(out);
+    wrap.input = r;
+    return wrap;
+}
+
+/* Zoom and move, with no drawing tools. Flames, explosions and asteroids
+   are not surfaces you can draw on, but you still want a closer look. */
+function buildZoomBar() {
+    const box = document.createElement('div');
+    box.appendChild(zoomRow());
+    const hint = document.createElement('p');
+    hint.className = 'drawhint';
+    hint.innerHTML = isPhone
+        ? 'Pinch with two fingers to look closer.'
+        : 'Mouse wheel to look closer. Hold <b>space</b> and drag to move around.';
+    box.appendChild(hint);
+    return box;
+}
+
+// Zoom and pan only: no stroke is ever started.
+function attachViewOnly(cv) {
+    cv.addEventListener('wheel', ev => {
+        ev.preventDefault();
+        zoomAt(cv, ev, ev.deltaY < 0 ? 1.12 : 1 / 1.12);
+        syncZoomUI();
+    }, { passive: false });
+
+    cv.addEventListener('pointerdown', ev => {
+        if (ev.pointerType === 'touch') {
+            touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+            if (touches.size === 2) {
+                ev.preventDefault();
+                const s = pinchState();
+                pinch = { dist: s.dist, mx: s.mx, my: s.my, zoom: view.zoom, px: view.px, py: view.py };
+                return;
+            }
+            if (touches.size > 2) return;
+        }
+        panning = { x: ev.clientX, y: ev.clientY, px: view.px, py: view.py };
+        try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
+    });
+
+    cv.addEventListener('pointermove', ev => {
+        if (ev.pointerType === 'touch' && touches.has(ev.pointerId)) {
+            touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+        }
+        if (pinch && touches.size >= 2) {
+            ev.preventDefault();
+            const s = pinchState();
+            const r = cv.getBoundingClientRect();
+            const k = cv.width / r.width;
+            const next = clamp(pinch.zoom * (s.dist / pinch.dist), ZOOM_MIN, ZOOM_MAX);
+            const grew = next / pinch.zoom;
+            const ax = (pinch.mx - r.left) * k - (cv.width / 2 + pinch.px);
+            const ay = (pinch.my - r.top) * k - ((cv.height / 2 - 10) + pinch.py);
+            view.zoom = next;
+            view.px = pinch.px + (s.mx - pinch.mx) * k + ax * (1 - grew);
+            view.py = pinch.py + (s.my - pinch.my) * k + ay * (1 - grew);
+            clampPan(cv);
+            syncZoomUI();
+            return;
+        }
+        if (!panning) return;
+        const r = cv.getBoundingClientRect();
+        const k = cv.width / r.width;
+        view.px = panning.px + (ev.clientX - panning.x) * k;
+        view.py = panning.py + (ev.clientY - panning.y) * k;
+        clampPan(cv);
+    });
+
+    const end = ev => {
+        if (ev && ev.pointerType === 'touch') {
+            touches.delete(ev.pointerId);
+            if (pinch) { if (touches.size === 0) pinch = null; return; }
+        }
+        panning = null;
+    };
+    cv.addEventListener('pointerup', end);
+    cv.addEventListener('pointercancel', end);
+    cv.addEventListener('pointerleave', () => { panning = null; });
+}
+
+// The zoom controls, shared by the full toolbar and the view-only one.
+function zoomRow() {
+    const zrow = document.createElement('div');
+    zrow.className = 'tools';
+    const zlab = document.createElement('span');
+    zlab.className = 'pct'; zlab.style.width = 'auto'; zlab.textContent = 'Zoom';
+    zrow.appendChild(zlab);
+
+    const zOutBtn = document.createElement('button');
+    zOutBtn.className = 'tiny'; zOutBtn.textContent = '−'; zOutBtn.title = 'Zoom out';
+    zOutBtn.onclick = () => { view.zoom = clamp(view.zoom / 1.25, ZOOM_MIN, ZOOM_MAX); syncZoomUI(); };
+    zrow.appendChild(zOutBtn);
+
+    const zs = document.createElement('input');
+    zs.type = 'range'; zs.id = 'zoomSlider';
+    zs.min = ZOOM_MIN; zs.max = ZOOM_MAX; zs.step = 0.05; zs.value = view.zoom;
+    zs.style.width = '120px';
+    zs.oninput = () => { view.zoom = parseFloat(zs.value); syncZoomUI(); };
+    zrow.appendChild(zs);
+
+    const zInBtn = document.createElement('button');
+    zInBtn.className = 'tiny'; zInBtn.textContent = '+'; zInBtn.title = 'Zoom in';
+    zInBtn.onclick = () => { view.zoom = clamp(view.zoom * 1.25, ZOOM_MIN, ZOOM_MAX); syncZoomUI(); };
+    zrow.appendChild(zInBtn);
+
+    const zOut = document.createElement('span');
+    zOut.className = 'pct'; zOut.id = 'zoomOut'; zOut.style.width = '44px';
+    zOut.textContent = Math.round(view.zoom * 100) + '%';
+    zrow.appendChild(zOut);
+
+    const fit = document.createElement('button');
+    fit.className = 'tiny'; fit.textContent = 'Fit'; fit.title = 'Back to the whole thing';
+    fit.onclick = () => { resetView(); syncZoomUI(); };
+    zrow.appendChild(fit);
+    return zrow;
+}
+
+function buildToolbar(skin) {
+    const box = document.createElement('div');
+
+    /* ------------------------------------------------------ zoom and pan */
+    const zrow = document.createElement('div');
+    zrow.className = 'tools';
+    const zlab = document.createElement('span');
+    zlab.className = 'pct';
+    zlab.style.width = 'auto';
+    zlab.textContent = 'Zoom';
+    zrow.appendChild(zlab);
+
+    const zOutBtn = document.createElement('button');
+    zOutBtn.className = 'tiny'; zOutBtn.textContent = '−';
+    zOutBtn.title = 'Zoom out';
+    zOutBtn.onclick = () => { view.zoom = clamp(view.zoom / 1.25, ZOOM_MIN, ZOOM_MAX); syncZoomUI(); };
+    zrow.appendChild(zOutBtn);
+
+    const zs = document.createElement('input');
+    zs.type = 'range'; zs.id = 'zoomSlider';
+    zs.min = ZOOM_MIN; zs.max = ZOOM_MAX; zs.step = 0.05; zs.value = view.zoom;
+    zs.style.width = '130px';
+    zs.oninput = () => { view.zoom = parseFloat(zs.value); syncZoomUI(); };
+    zrow.appendChild(zs);
+
+    const zInBtn = document.createElement('button');
+    zInBtn.className = 'tiny'; zInBtn.textContent = '+';
+    zInBtn.title = 'Zoom in';
+    zInBtn.onclick = () => { view.zoom = clamp(view.zoom * 1.25, ZOOM_MIN, ZOOM_MAX); syncZoomUI(); };
+    zrow.appendChild(zInBtn);
+
+    const zOut = document.createElement('span');
+    zOut.className = 'pct'; zOut.id = 'zoomOut';
+    zOut.style.width = '44px';
+    zOut.textContent = Math.round(view.zoom * 100) + '%';
+    zrow.appendChild(zOut);
+
+    const moveBtn = document.createElement('button');
+    moveBtn.className = 'tiny' + (tool === 'move' ? ' on' : '');
+    moveBtn.textContent = 'Move';
+    moveBtn.title = 'Drag the rocket around. You can also hold space, or drag with the middle mouse button.';
+    moveBtn.onclick = () => { tool = (tool === 'move' ? 'none' : 'move'); renderWork(); };
+    zrow.appendChild(moveBtn);
+
+    const fit = document.createElement('button');
+    fit.className = 'tiny';
+    fit.textContent = 'Fit';
+    fit.title = 'Back to the whole rocket';
+    fit.onclick = () => { resetView(); syncZoomUI(); };
+    zrow.appendChild(fit);
+    box.appendChild(zrow);
+
+    /* ---------------------------------------------------------- the tools */
+    const row = document.createElement('div');
+    row.className = isPhone ? 'toolgrid' : 'tools';
+    const mk = (id, label, title) => {
+        const b = document.createElement('button');
+        b.className = 'tiny' + (tool === id ? ' on' : '');
+        b.textContent = label;
+        b.title = title;
+        b.onclick = () => { tool = (tool === id ? 'none' : id); renderWork(); };
+        row.appendChild(b);
+    };
+    mk('marker', 'Marker', 'Draw a sharp line on the rocket');
+    mk('airbrush', 'Airbrush', 'Draw a soft-edged line');
+    mk('shade', 'Shading', 'Brush on a soft wash of colour, as strong or as faint as you like');
+    mk('shape', 'Shape', 'Press and drag to place a perfect circle, square, triangle or star');
+    mk('blend', 'Fade', 'Drag over a hard edge to soften it');
+    mk('erase', 'Rub out', 'Click a stroke to remove it');
+    box.appendChild(row);
+
+    /* ------------------------------------- the settings for the live tool */
+    const row2 = document.createElement('div');
+    row2.className = 'tools';
+
+    if (tool === 'shade') {
+        const col = document.createElement('input');
+        col.type = 'color';
+        col.value = brush.shadeColor;
+        col.title = 'Shading colour';
+        col.oninput = () => { brush.shadeColor = col.value; };
+        row2.appendChild(col);
+
+        const lab = document.createElement('span');
+        lab.className = 'pct'; lab.style.width = 'auto'; lab.textContent = 'strength';
+        row2.appendChild(lab);
+        row2.appendChild(slider(0.03, 0.9, 0.01, brush.shadeStrength, '96px',
+            v => { brush.shadeStrength = v; }, v => Math.round(v * 100) + '%'));
+    } else if (tool === 'blend') {
+        const lab = document.createElement('span');
+        lab.className = 'pct'; lab.style.width = 'auto'; lab.textContent = 'strength';
+        row2.appendChild(lab);
+        row2.appendChild(slider(0.1, 1, 0.05, brush.fadeStrength, '110px',
+            v => { brush.fadeStrength = v; }, v => Math.round(v * 100) + '%'));
+    } else {
+        const col = document.createElement('input');
+        col.type = 'color';
+        col.value = brush.color;
+        col.title = 'Colour';
+        col.oninput = () => { brush.color = col.value; };
+        row2.appendChild(col);
+    }
+
+    if (tool === 'shape') {
+        const sel = document.createElement('select');
+        sel.style.width = 'auto';
+        [['circle', 'Circle'], ['square', 'Square'], ['triangle', 'Triangle'], ['star', 'Star']]
+            .forEach(([v, t]) => {
+                const o = document.createElement('option');
+                o.value = v; o.textContent = t;
+                sel.appendChild(o);
+            });
+        sel.value = brush.shape;
+        sel.onchange = () => { brush.shape = sel.value; renderWork(); };
+        row2.appendChild(sel);
+
+        const fillWrap = document.createElement('label');
+        fillWrap.style.display = 'inline-flex';
+        fillWrap.style.alignItems = 'center';
+        fillWrap.style.gap = '5px';
+        fillWrap.style.fontSize = '.82rem';
+        fillWrap.style.color = 'var(--dim)';
+        const fb = document.createElement('input');
+        fb.type = 'checkbox';
+        fb.checked = brush.fillShape;
+        fb.onchange = () => { brush.fillShape = fb.checked; };
+        fillWrap.appendChild(fb);
+        fillWrap.appendChild(document.createTextNode('solid'));
+        row2.appendChild(fillWrap);
+    }
+
+    // Size matters to every tool except the shape, which is sized by dragging.
+    if (tool !== 'shape') {
+        const lab2 = document.createElement('span');
+        lab2.className = 'pct'; lab2.style.width = 'auto'; lab2.textContent = 'size';
+        row2.appendChild(lab2);
+        row2.appendChild(slider(0.02, 0.3, 0.005, brush.size, '96px',
+            v => { brush.size = v; }, v => Math.round(v * 100)));
+    }
+
+    const undo = document.createElement('button');
+    undo.className = 'tiny';
+    undo.textContent = 'Undo';
+    undo.onclick = () => {
+        const k = undoStack.pop();
+        const list = k && skin[k];
+        if (!list || !list.length) return;
+        list.pop();
+        if (!list.length) delete skin[k];
+        saveAll(); render();
+    };
+    row2.appendChild(undo);
+
+    const clear = document.createElement('button');
+    clear.className = 'tiny danger';
+    clear.textContent = 'Clear drawing';
+    clear.onclick = () => {
+        if (!skin.decals && !skin.blends) return;
+        if (!confirm('Remove everything drawn on this rocket?')) return;
+        delete skin.decals; delete skin.blends;
+        undoStack = [];
+        saveAll(); render();
+    };
+    row2.appendChild(clear);
+    box.appendChild(row2);
+
+    const n = (skin.decals || []).length + (skin.blends || []).length;
+    const hint = document.createElement('p');
+    hint.className = 'drawhint';
+    hint.innerHTML =
+        tool === 'none'
+            ? (n ? n + ' stroke' + (n === 1 ? '' : 's') + ' on this rocket. Pick a tool to add more.'
+                 : 'Pick a tool, then draw straight onto the rocket.')
+        : tool === 'move'
+            ? 'Drag the rocket around. The mouse wheel zooms, and <b>Fit</b> puts it back.'
+        : tool === 'blend'
+            ? 'Drag across a hard edge &mdash; the nose band or the stripe &mdash; to soften it. <b>Strength</b> sets how far it softens.'
+        : tool === 'shade'
+            ? 'Brush colour over the paint. Low strength builds up gently; go over the same place twice for more.'
+        : tool === 'shape'
+            ? 'Press where you want the middle, then drag outwards to the size you want.'
+        : tool === 'erase'
+            ? 'Click any stroke to remove it.'
+            : 'Drag on the rocket to draw. It is clipped to the hull, so you cannot go over the edge.';
+    box.appendChild(hint);
+
+    const zoomHint = document.createElement('p');
+    zoomHint.className = 'drawhint';
+    zoomHint.style.marginTop = '2px';
+    zoomHint.innerHTML = isPhone
+        ? (view.zoom > 1.05
+            ? '<b>Zoomed in.</b> Two fingers to move around or zoom back out. Zoom costs nothing &mdash; it only changes what you are looking at.'
+            : '<b>Pinch with two fingers</b> on the rocket to zoom in for fine detail. One finger draws.')
+        : (view.zoom > 1.05
+            ? '<b>Zoomed in.</b> Hold <b>space</b> and drag to move around. Zoom costs nothing &mdash; it only changes what you are looking at.'
+            : 'Mouse wheel on the rocket to zoom in for fine detail.');
+    box.appendChild(zoomHint);
+    return box;
+}
+
+/* ============================ SENDING IT IN ============================ */
+
+let sending = false;
+
+async function sendIn() {
+    if (sending) return;
+    const d = current();
+    if (!d) return;
+
+    if (!CONFIG.SUBMIT_URL) {
+        say('err', 'Sending is not switched on for this copy.',
+            ['Use <b>Copy code</b> instead and send the code in a message.',
+             'Whoever runs the game can switch sending on by pasting their web app address into the file.']);
+        return;
+    }
+    if (!me.name) { askName(); return; }
+    if (CONFIG.REQUIRE_CODE && !me.code) {
+        say('err', 'You need your invite code first.',
+            ['Click your name in the top bar and type the code you were given.']);
+        return;
+    }
+    if (!d.name.trim()) {
+        say('err', 'Give the design a name first.', []);
+        return;
+    }
+
+    const b64 = skinCode(d);
+    if (b64.length > MAX_CODE_CHARS) {
+        say('err', 'This design is too big to send.',
+            ['Rub out some strokes, or use longer lines rather than many short ones.']);
+        return;
+    }
+
+    sending = true;
+    sendButtons(true, 'Sending...');
+    try {
+        // text/plain on purpose. Anything else makes the browser ask
+        // permission first with an OPTIONS request, which Apps Script does
+        // not answer - and the send fails for reasons that look unrelated.
+        const res = await fetch(CONFIG.SUBMIT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                code: me.code,
+                by: me.name,
+                name: d.name.trim(),
+                // The Kind column in the sheet. It has to be this design's
+                // kind, not a fixed one, or every row says "rocket".
+                kind: d.kind || 'rocket',
+                b64: b64
+            })
+        });
+        const text = await res.text();
+        let out = null;
+        try { out = JSON.parse(text); } catch (e) {}
+
+        if (out && out.ok) {
+            d.sentAt = Date.now();
+            saveAll(true);
+            renderList();
+            say('ok', 'Sent. Thank you!',
+                ['"' + escapeHtml(d.name) + '" is now with ' + escapeHtml(CONFIG.OWNER) + '.',
+                 'Keep designing - you can send as many as you like.']);
+        } else {
+            const why = out && out.error ? out.error : 'the server did not say why';
+            say('err', 'It would not go through.',
+                ['Reason given: <b>' + escapeHtml(why) + '</b>',
+                 'Your design is safe here. Try again, or use <b>Copy code</b> and send it in a message.']);
+        }
+    } catch (e) {
+        say('err', 'Could not reach the server.',
+            ['Check you are online and try again.',
+             'Your design is safe here. <b>Copy code</b> always works, even offline.']);
+    } finally {
+        sending = false;
+        sendButtons(false, 'Send it in');
+    }
+}
+
+// There are two of them - one in the header for a computer, one in the
+// bar at the bottom for a thumb - and both must say the same thing.
+function sendButtons(disabled, label) {
+    ['btnSend', 'btnSend2'].forEach(id => {
+        const b = $(id);
+        if (!b) return;
+        b.disabled = disabled;
+        b.textContent = label;
+    });
+}
+
+/* ============================= BACKUP / RESTORE ========================= */
+
+function backup() {
+    const blob = new Blob([JSON.stringify({
+        v: 1, by: me.name, savedAt: Date.now(), designs: designs
+    }, null, 1)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'my-rocket-designs.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    say('ok', 'Backup saved to your downloads.',
+        ['Keep it somewhere safe. <b>Restore</b> brings everything back, on any computer.']);
+}
+
+function restore() {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.json,application/json';
+    inp.onchange = () => {
+        const f = inp.files && inp.files[0];
+        if (!f) return;
+        const fr = new FileReader();
+        fr.onload = () => {
+            let data = null;
+            try { data = JSON.parse(String(fr.result)); } catch (e) {}
+            const list = data && Array.isArray(data.designs)
+                ? data.designs.filter(x => x && x.skin && typeof x.skin === 'object')
+                : null;
+            if (!list || !list.length) {
+                say('err', 'That is not a designs backup.',
+                    ['Pick the <b>my-rocket-designs.json</b> file that Back up saved.']);
+                return;
+            }
+            const before = designs.length;
+            list.forEach(x => designs.push({
+                name: String(x.name || 'Restored'),
+                skin: x.skin,
+                savedAt: Date.now(),
+                sentAt: 0
+            }));
+            sel = before;
+            saveAll(true);
+            render();
+            say('ok', 'Added ' + list.length + ' design' + (list.length === 1 ? '' : 's') + '.',
+                ['Your existing ones were left alone.']);
+        };
+        fr.readAsText(f);
+    };
+    inp.click();
+}
+
+/* =============================== NAME ================================== */
+
+function askName() {
+    $('nameIn').value = me.name;
+    $('codeIn').value = me.code;
+    $('nameErr').textContent = '';
+    $('nameVeil').classList.add('show');
+    setTimeout(() => $('nameIn').focus(), 50);
+}
+
+function saveName() {
+    const n = $('nameIn').value.replace(/\s+/g, ' ').trim().slice(0, 24);
+    if (!n) { $('nameErr').textContent = 'Type a name so your work gets credited.'; return; }
+    if (!/^[A-Za-z0-9 _.\-]+$/.test(n)) {
+        $('nameErr').textContent = 'Letters, numbers, spaces, _ . and - only.';
+        return;
+    }
+    me.name = n;
+    me.code = $('codeIn').value.trim().slice(0, 32);
+    store.set(KEYS.name, me.name);
+    store.set(KEYS.code, me.code);
+    $('nameVeil').classList.remove('show');
+    renderWho();
+    renderList();
+}
+
+/* =============================== COPY ================================== */
+
+function openCopy() {
+    const d = current();
+    if (!d) return;
+    if (!me.name) { askName(); return; }
+    const code = skinCode(d);
+    $('copyBox').value = code;
+    $('copyErr').textContent = code.length > MAX_CODE_CHARS
+        ? 'This one is over the size limit, so it may not be accepted.' : '';
+    $('copyVeil').classList.add('show');
+    setTimeout(() => { $('copyBox').focus(); $('copyBox').select(); }, 50);
+}
+
+async function doCopy() {
+    const box = $('copyBox');
+    box.focus(); box.select();
+    let ok = false;
+    try {
+        await navigator.clipboard.writeText(box.value);
+        ok = true;
+    } catch (e) {
+        // Clipboard access is refused on plain http and in some browsers.
+        try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+    }
+    if (ok) {
+        $('copyVeil').classList.remove('show');
+        say('ok', 'Copied.', ['Paste it into a message and send it off.']);
+    } else {
+        $('copyErr').textContent = 'This browser would not let me copy it. It is selected - press Ctrl+C.';
+    }
+}
+
+/* ============================ THE LOOP ================================= */
+
+function render() { renderWho(); renderList(); renderWork(); }
+
+/* ---------------------------------------------------- the zoomed preview
+
+   Every soft-edged stroke costs its own blur, and a blur costs more the
+   bigger it is drawn. Measured: a rocket with a few shading strokes takes
+   about 3ms to draw at normal size and nearly 50ms at six times zoom -
+   three whole frames, for a picture that is not moving.
+
+   So above normal size the finished rocket is kept as an image and simply
+   stamped down each frame. Zooming or editing builds it again; panning
+   does not, because panning only changes where it goes. */
+let rocketCv = null, rocketKey = null;
+
+function cachedRocket(skin, scale, now, tag) {
+    const w = 38 * scale, h = 68 * scale;
+    // Room for the fins at the sides and the flame below.
+    const ox = Math.ceil(w * 0.9);
+    const oyTop = Math.ceil(h * 0.62);
+    const oyBot = Math.ceil(h * 1.18);
+    const cwid = ox * 2, chei = oyTop + oyBot;
+
+    if (!rocketCv) rocketCv = document.createElement('canvas');
+    if (rocketCv.width !== cwid || rocketCv.height !== chei) {
+        rocketCv.width = cwid; rocketCv.height = chei;
+        rocketKey = null;
+    }
+
+    // Shiny skins have a shimmer that travels up the hull. Redrawing that
+    // eight times a second instead of sixty keeps it alive for a fraction
+    // of the cost, and at this size nobody can tell.
+    const bucket = skin.pattern === 'shiny' ? Math.floor(now / 120) : 0;
+
+    /* While a stroke is being drawn the image is held still and the live
+       stroke is painted over the top instead. Rebuilding the whole rocket
+       on every point was the difference between a line that follows your
+       hand and one that crawls after it. */
+    const rev = drawingStroke ? dragRev : skinRev;
+    const key = (tag || 'r') + '|' + rev + '|' + cwid + 'x' + chei + '|' + bucket;
+
+    if (key !== rocketKey) {
+        rocketKey = key;
+        const c = rocketCv.getContext('2d');
+        c.setTransform(1, 0, 0, 1, 0, 0);
+        c.clearRect(0, 0, cwid, chei);
+        c.save();
+        c.translate(ox, oyTop);
+        // No flame: it is drawn live underneath so it keeps moving.
+        drawRocket(c, skin, null, scale, now, true,
+                   { x0: -ox, y0: -oyTop, x1: ox, y1: oyBot });
+        c.restore();
+    }
+    return { ox: ox, oy: oyTop };
+}
+
+let lastFrame = performance.now();
+
+function loop(now) {
+    const dt = Math.min(0.05, (now - lastFrame) / 1000);
+    lastFrame = now;
+    const cv = $('stageCanvas');
+    const d = current();
+    if (cv && d) {
+        const ctx = cv.getContext('2d');
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        const { cx, cy } = viewCentre(cv);
+        const scale = viewScale();
+        const k = d.kind || 'rocket';
+
+        if (k === 'blast') {
+            // Particles have to be drawn every frame: that is the whole point.
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.scale(scale / PREVIEW_SCALE, scale / PREVIEW_SCALE);
+            stepBlast(ctx, dt);
+            ctx.restore();
+            if (!blastParts.length) fireBlast(d.skin);      // loop it
+        } else if (k === 'rock') {
+            const r = 34 * scale;
+            ctx.save();
+            ctx.translate(cx - r * 1.25, cy + r * 0.2);
+            drawRock(ctx, d.skin, r, false, 1.7, 0.4);
+            ctx.restore();
+            ctx.save();
+            ctx.translate(cx + r * 1.4, cy + r * 0.2);
+            drawRock(ctx, d.skin, r * 0.82, true, 3.1, -0.3);
+            ctx.restore();
+        } else {
+            // Rocket, or a flame shown on a plain rocket.
+            const body = k === 'boost' ? PLAIN_ROCKET : d.skin;
+            const flame = k === 'boost' ? d.skin : DEFAULT_BOOST;
+            const img = cachedRocket(body, scale, now, k);
+            const w = 38 * scale, h = 68 * scale;
+
+            // Behind the rocket, fresh every frame so it keeps flickering.
+            ctx.save();
+            ctx.translate(cx, cy);
+            drawFlame(ctx, flame, scale, now, true);
+            ctx.restore();
+
+            ctx.drawImage(rocketCv, cx - img.ox, cy - img.oy);
+
+            // The stroke being drawn right now, straight on top. It drops
+            // into its proper place the moment you let go.
+            if (drawingStroke && k === 'rocket') {
+                ctx.save();
+                ctx.translate(cx, cy);
+                traceFuselage(ctx, w, h);
+                ctx.clip();
+                const live = drawingStroke.c
+                    ? drawingStroke
+                    : Object.assign({}, drawingStroke, { c: 'rgba(255,255,255,0.4)' });
+                drawStrokeList(ctx, [live], w, h, false);
+                ctx.restore();
+            }
+        }
+    }
+    requestAnimationFrame(loop);
+}
+
+/* ============================== START UP =============================== */
+
+/* ============================== SETTINGS =============================== */
+
+function renderLayoutButtons() {
+    const box = $('layoutBtns');
+    box.innerHTML = '';
+    [['auto', 'Automatic'], ['phone', 'Phone'], ['computer', 'Computer']].forEach(([v, label]) => {
+        const b = document.createElement('button');
+        b.className = layoutMode === v ? 'primary' : '';
+        b.textContent = label;
+        b.onclick = () => {
+            layoutMode = v;
+            store.set(KEYS.layout, v);
+            applyLayout();
+            renderLayoutButtons();
+        };
+        box.appendChild(b);
+    });
+    $('setWho').innerHTML = me.name
+        ? 'Your designs go out under the name <b>' + escapeHtml(me.name) + '</b>.'
+        : 'You have not set a name yet.';
+}
+
+/* =====================================================================
+   THE CONNECTION TEST
+
+   Goes down exactly the same road as a real submission - same address,
+   same kind of request, same permissions - and stops short of writing a
+   row. If this says yes, sending works.
+
+   It also names the usual mistakes instead of making you guess, because
+   the error Google gives back for the commonest one (using the /dev
+   address) has nothing to do with the actual problem.
+   ===================================================================== */
+let testing = false;
+
+async function testConnection() {
+    if (testing) return;
+    const out = $('setTestOut');
+    const show = (cls, html) => { out.innerHTML = html; out.className = 'note ' + (cls || ''); };
+
+    if (!CONFIG.SUBMIT_URL) {
+        show('', '<b style="color:var(--gold)">Sending is switched off in this copy.</b><br>' +
+            'There is no address in <code>SUBMIT_URL</code> yet, so <b>Send it in</b> does nothing ' +
+            'and designers use <b>Copy code</b> instead. That is a perfectly good way to run this.');
+        return;
+    }
+    if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/(exec|dev)/.test(CONFIG.SUBMIT_URL)) {
+        show('', '<b style="color:var(--gold)">That address does not look like an Apps Script web app.</b><br>' +
+            'It should look like <code>https://script.google.com/macros/s/AKfy&hellip;/exec</code>. ' +
+            'Testing it anyway&hellip;');
+    }
+    if (/\/dev(\?|$)/.test(CONFIG.SUBMIT_URL)) {
+        show('', '<b style="color:var(--bad)">That is the /dev address.</b><br>' +
+            'It only works while <i>you</i> are signed in to Google, so it will work perfectly for ' +
+            'you and fail for every designer. Use the one ending <code>/exec</code>, from ' +
+            'Deploy &rarr; Manage deployments.');
+        return;
+    }
+
+    testing = true;
+    $('setTest').disabled = true;
+    $('setTest').textContent = 'Testing...';
+    show('', 'Asking the server&hellip;');
+
+    try {
+        const res = await fetch(CONFIG.SUBMIT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ ping: true, code: me.code || '' })
+        });
+        const text = await res.text();
+        let data = null;
+        try { data = JSON.parse(text); } catch (e) {}
+
+        if (data && data.ok && data.ping) {
+            let msg = '<b style="color:var(--good)">It works.</b><br>' +
+                'Connected to the sheet <b>' + escapeHtml(String(data.sheet || 'your sheet')) + '</b>, ' +
+                'which has <b>' + (data.submissions || 0) + '</b> submission' +
+                ((data.submissions || 0) === 1 ? '' : 's') + ' so far.<br>' +
+                '<b>Nothing was added</b> &mdash; this stops just before writing.';
+            if (data.codesInUse > 0) {
+                msg += '<br>Invite codes are on (' + data.codesInUse + ' in the list). ' +
+                    (data.codeAccepted
+                        ? 'Your code is <b style="color:var(--good)">accepted</b>.'
+                        : '<b style="color:var(--bad)">Your code is not on the list</b>, so your own ' +
+                          'sends would be refused. Add it to the Codes tab, or clear that tab to let anyone in.');
+            } else {
+                msg += '<br>No invite codes set, so anyone with this page can send work in.';
+            }
+            show('', msg);
+        } else if (data && data.error) {
+            show('', '<b style="color:var(--bad)">The server answered, but said no.</b><br>' +
+                'Reason: <b>' + escapeHtml(String(data.error)) + '</b><br>' +
+                'The address and the permissions are right &mdash; this is the script itself refusing.');
+        } else if (/sign ?in|accounts\.google|google account|choose an account/i.test(text)) {
+            // Google asked whoever called for a login, which it only does
+            // when the deployment is not open to everyone.
+            show('', '<b style="color:var(--bad)">Google sent back a sign-in page, not an answer.</b><br>' +
+                'The deployment is set to the wrong access level. Go to Deploy &rarr; Manage ' +
+                'deployments, press the pencil, and set <b>Who has access</b> to <b>Anyone</b>.');
+        } else if (/<html/i.test(text) || res.status >= 400) {
+            // A web page rather than an answer, and not a login: the usual
+            // cause is an address with no live deployment behind it.
+            show('', '<b style="color:var(--bad)">Nothing is deployed at that address.</b><br>' +
+                'Saving the script is not the same as deploying it. Go to <b>Deploy &rarr; New ' +
+                'deployment</b>, pick <b>Web app</b>, and use the <code>/exec</code> address it ' +
+                'gives you. If you changed the script since deploying, use <b>Manage deployments</b> ' +
+                'and set Version to <b>New version</b>.' +
+                (res.status >= 400 ? '<br>The server said: <b>' + res.status + '</b>.' : ''));
+        } else {
+            show('', '<b style="color:var(--bad)">Got a reply, but not one I understand.</b><br>' +
+                'First part of it: <code>' + escapeHtml(text.slice(0, 160)) + '</code><br>' +
+                'Usually this means the script saved but was never deployed as a web app, or the ' +
+                'script has an error in it.');
+        }
+    } catch (e) {
+        show('', '<b style="color:var(--bad)">Could not reach it at all.</b><br>' +
+            'Either you are offline, the address is wrong, or the deployment was deleted.<br>' +
+            'Open the address in a browser tab: a working one answers with ' +
+            '<code>{"ok":true,&hellip;}</code>.');
+    } finally {
+        testing = false;
+        $('setTest').disabled = false;
+        $('setTest').textContent = 'Test the connection';
+    }
+}
+
+function openSettings() {
+    renderLayoutButtons();
+    $('setTestOut').innerHTML = '';
+    $('setSendWhere').innerHTML = CONFIG.SUBMIT_URL
+        ? 'Work is sent to <code>' + escapeHtml(CONFIG.SUBMIT_URL.slice(0, 54)) + '&hellip;</code>'
+        : '<b>Send it in</b> is switched off in this copy, so designers use <b>Copy code</b>.';
+    $('setVeil').classList.add('show');
+}
+
+$('btnSend').onclick = sendIn;
+$('btnSend2').onclick = sendIn;
+$('btnCopy').onclick = openCopy;
+$('btnCopy2').onclick = openCopy;
+$('btnBackup').onclick = backup;
+$('btnRestore').onclick = restore;
+$('btnSettings').onclick = openSettings;
+$('setTest').onclick = testConnection;
+$('setBackup').onclick = backup;
+$('setRestore').onclick = restore;
+$('setClose').onclick = () => $('setVeil').classList.remove('show');
+$('setName').onclick = () => { $('setVeil').classList.remove('show'); askName(); };
+$('btnDesigns').onclick = () => {
+    document.body.classList.contains('designs-open') ? closeDesigns() : openDesigns();
+};
+$('scrim').onclick = closeDesigns;
+$('who').onclick = askName;
+$('nameOk').onclick = saveName;
+$('nameIn').addEventListener('keydown', e => { if (e.key === 'Enter') saveName(); });
+$('codeIn').addEventListener('keydown', e => { if (e.key === 'Enter') saveName(); });
+$('copyGo').onclick = doCopy;
+$('copyClose').onclick = () => $('copyVeil').classList.remove('show');
+$('msgX').onclick = () => $('msg').classList.remove('show');
+
+if (!CONFIG.SUBMIT_URL) {
+    ['btnSend', 'btnSend2'].forEach(id => {
+        const b = $(id);
+        if (b) b.title = 'Not switched on in this copy - use Copy code';
+    });
+}
+
+loadAll();
+layoutMode = store.get(KEYS.layout) || 'auto';
+isPhone = phoneWanted();
+document.body.classList.toggle('phone', isPhone);
+render();
+requestAnimationFrame(loop);
+requestAnimationFrame(() => document.body.classList.add('ready'));
+
+// Turning the phone sideways, or dragging a window about, changes which
+// layout fits and how big the rocket should be.
+let resizeTimer = null;
+function onResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(applyLayout, 120);
+}
+window.addEventListener('resize', onResize);
+window.addEventListener('orientationchange', onResize);
+
+if (!me.name) {
+    askName();
+} else if (isPhone) {
+    // One line on a phone. A three-line greeting sits on top of the tools.
+    say('ok', 'Welcome back, ' + escapeHtml(me.name) + '.',
+        [designs.length + ' design' + (designs.length === 1 ? '' : 's') + ' saved here.']);
+} else {
+    say('ok', 'Welcome back, ' + escapeHtml(me.name) + '.',
+        [designs.length + ' design' + (designs.length === 1 ? '' : 's') + ' saved in this browser.',
+         'They live in this browser only - press <b>Back up</b> now and then.']);
+}
+</script>
+</body>
+</html>
